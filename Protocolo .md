@@ -16,3 +16,4 @@ Antes de desarrollar vistas:
 HISTORIAL OPERATIVO:
 - [2026-10-10T23:56:00-05:00] Inicializado script `~/.agy/scripts/git_sync.sh` y repositorio Git local con exclusión preventiva de binarios multimedia pesados (`*.mp4`). Implementadas especificaciones de `SPEC.md` v2.0 y `frontend-motion-dev` en `index.html`.
 - [2026-10-11T00:04:00-05:00] Actualizado `SPEC.md` v3.2 para incorporar formato Scrollytelling, Cascada Infinita fluida interactiva, enjambre de drones que acompaña el scroll de la página, narrativa del proceso de creación del proyecto y sección de equipo multidisciplinario.
+- [2026-10-11T01:25:00-05:00] Actualizado a v3.3: Embebido el video en la cascada fluida con reproducción directa, integración de los integrantes oficiales del PPT (Valentín García Dueñas, Jhoao López, Aron Ayala, Tutor Charlen Calero H.), tipografía suave (Plus Jakarta Sans), ambientación de ciudad en colapso por sismo y remoción del HUD flotante inferior derecho.
