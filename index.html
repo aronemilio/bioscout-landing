@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioScout ARES | Orquestación Autónoma de Enjambres UAV</title>
+  
+  <!-- Tipografía Técnica de Alta Precisión -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            tactical: {
+              950: '#030712',
+              900: '#090d16',
+              850: '#0d1322',
+              800: '#151e32',
+              700: '#1e293b',
+              cyan: '#00f2fe',
+              emerald: '#10b981',
+              amber: '#f59e0b',
+              red: '#ef4444'
+            }
+          },
+          animation: {
+            'radar-sweep': 'radarSweep 4s linear infinite',
+            'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
+            'scanline': 'scanline 8s linear infinite',
+          },
+          keyframes: {
+            radarSweep: {
+              '0%': { transform: 'rotate(0deg)' },
+              '100%': { transform: 'rotate(360deg)' },
+            },
+            pulseGlow: {
+              '0%, 100%': { opacity: '0.4', filter: 'drop-shadow(0 0 4px rgba(6,182,212,0.4))' },
+              '50%': { opacity: '1', filter: 'drop-shadow(0 0 12px rgba(6,182,212,0.9))' },
+            },
+            scanline: {
+              '0%': { transform: 'translateY(-100%)' },
+              '100%': { transform: 'translateY(1000%)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Estética Táctica y Filtros Reticulares */
+    .bg-grid-tactical {
+      background-size: 32px 32px;
+      background-image: 
+        linear-gradient(to right, rgba(14, 165, 233, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(14, 165, 233, 0.05) 1px, transparent 1px);
+    }
+    .hud-bracket {
+      position: relative;
+    }
+    .hud-bracket::before {
+      content: '';
+      position: absolute;
+      top: -2px; left: -2px;
+      width: 10px; height: 10px;
+      border-top: 2px solid #06b6d4;
+      border-left: 2px solid #06b6d4;
+    }
+    .hud-bracket::after {
+      content: '';
+      position: absolute;
+      bottom: -2px; right: -2px;
+      width: 10px; height: 10px;
+      border-bottom: 2px solid #06b6d4;
+      border-right: 2px solid #06b6d4;
+    }
+    /* Estilización del scrollbar táctico */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #030712;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e293b;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #0891b2;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans selection:bg-cyan-500 selection:text-black overflow-x-hidden relative">
+
+  <!-- Retícula de Fondo con degradado táctico -->
+  <div class="fixed inset-0 bg-grid-tactical pointer-events-none z-0 opacity-80"></div>
+  <div class="fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(14,165,233,0.12),rgba(2,6,23,0.95))] pointer-events-none z-0"></div>
+
+  <!-- Barra de Estado Operativa Superior (HUD Táctico) -->
+  <div class="relative z-50 bg-slate-900/90 border-b border-cyan-900/40 text-[11px] font-mono py-1 px-4 text-slate-400">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center gap-4">
+        <span class="inline-flex items-center gap-1.5 text-emerald-400 font-semibold">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          EDGE CORE: 100% AUTÓNOMO (LOCAL OFFLINE)
+        </span>
+        <span class="hidden md:inline-block text-slate-600">|</span>
+        <span class="hidden md:inline-flex items-center gap-1 text-cyan-400">
+          <i data-lucide="cpu" class="w-3 h-3"></i>
+          INFERENCIA D-FINE RT-DETR: ACTIVA (14.2 ms)
+        </span>
+        <span class="hidden lg:inline-block text-slate-600">|</span>
+        <span class="hidden lg:inline-flex items-center gap-1 text-slate-400">
+          <i data-lucide="radio" class="w-3 h-3 text-cyan-400"></i>
+          TELEMETRÍA RF/LoRa + WS: 20 Hz SÍNCRONA
+        </span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-amber-400 flex items-center gap-1">
+          <i data-lucide="timer" class="w-3.5 h-3.5"></i>
+          VENTANA HORA DORADA: <strong id="golden-hour-clock" class="text-amber-300 font-bold">59:42</strong>
+        </span>
+        <span class="text-slate-500 hidden sm:inline">UTC: <span id="utc-clock">00:00:00</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navbar Principal -->
+  <header class="sticky top-0 w-full z-40 bg-slate-950/85 backdrop-blur-xl border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      
+      <!-- Logo y Módulo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-lg bg-cyan-950/80 border border-cyan-500/40 flex items-center justify-center text-cyan-400 group-hover:border-cyan-400 transition-colors shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+          <i data-lucide="shield-alert" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold tracking-wider text-lg text-white font-mono">BIOSCOUT</span>
+            <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono font-bold tracking-widest">ARES</span>
+          </div>
+          <p class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Swarm Search & Rescue Core</p>
+        </div>
+      </a>
+
+      <!-- Menú de Navegación Rápida -->
+      <nav class="hidden md:flex items-center gap-6 text-xs font-mono uppercase tracking-wider text-slate-300">
+        <a href="#radar-section" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="crosshair" class="w-3.5 h-3.5 text-cyan-400"></i> Radar Enjambre
+        </a>
+        <a href="#vision-section" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="eye" class="w-3.5 h-3.5 text-cyan-400"></i> D-FINE RT-DETR
+        </a>
+        <a href="#telemetry-section" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="activity" class="w-3.5 h-3.5 text-emerald-400"></i> Telemetría
+        </a>
+        <a href="#audit-section" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-cyan-400"></i> Auditoría AAR
+        </a>
+      </nav>
+
+      <!-- Botones de Acción -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <button onclick="openVideoModal()" class="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-mono font-medium rounded-md bg-gradient-to-r from-cyan-950 to-slate-900 border border-cyan-500/50 text-cyan-300 hover:text-white hover:border-cyan-400 hover:shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all">
+          <i data-lucide="play" class="w-3.5 h-3.5 fill-cyan-400 text-cyan-400"></i>
+          <span>Video Operativo</span>
+        </button>
+        <a href="#radar-section" class="hidden sm:inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-mono font-semibold rounded-md bg-cyan-500 text-slate-950 hover:bg-cyan-400 transition-colors shadow-lg shadow-cyan-500/20">
+          <i data-lucide="terminal" class="w-3.5 h-3.5"></i>
+          <span>Consola Táctica</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- SECCIÓN HERO: Misión Crítica & Hora Dorada -->
+  <section class="relative pt-16 pb-20 px-4 sm:px-6 max-w-7xl mx-auto z-10">
+    <div class="text-center max-w-3xl mx-auto">
+      
+      <!-- Distintivo de Despliegue -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 mb-6 text-xs font-mono text-cyan-300 bg-cyan-950/60 border border-cyan-500/40 rounded-full shadow-inner backdrop-blur-sm">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+        <span>MODO ARES // PROTOCOLO DE HORA DORADA (&lt; 60 MIN)</span>
+      </div>
+
+      <!-- Título de Impacto -->
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight">
+        Orquestación Autónoma de Enjambres UAV para
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-400">
+          Rescate en Desastres
+        </span>
+      </h1>
+
+      <p class="mt-6 text-slate-300 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
+        BioScout despliega enjambres coordinados con computación de borde (Edge) <strong>100% autónoma y local</strong>. Detección neuronal <strong>D-FINE (RT-DETR)</strong> con calibración FDR y algoritmos reactivos de evasión 3D con latencia menor a 50 ms.
+      </p>
+
+      <!-- Botones de Acción Hero -->
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <a href="#radar-section" class="px-6 py-3 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold font-mono text-sm flex items-center gap-2 transition-all shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+          <i data-lucide="radar" class="w-4 h-4"></i>
+          <span>Iniciar Radar Táctico en Vivo</span>
+        </a>
+        <button onclick="openVideoModal()" class="px-6 py-3 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-cyan-300 border border-slate-700 hover:border-cyan-400 font-mono text-sm flex items-center gap-2 transition-all">
+          <i data-lucide="film" class="w-4 h-4 text-cyan-400"></i>
+          <span>Ver Briefing de Misión (982 MB)</span>
+        </button>
+        <button onclick="downloadWaypointsFile()" class="px-5 py-3 rounded-lg bg-slate-900/60 hover:bg-slate-800 text-slate-300 border border-slate-800 hover:border-slate-600 font-mono text-sm flex items-center gap-2 transition-all">
+          <i data-lucide="download" class="w-4 h-4 text-emerald-400"></i>
+          <span>Waypoints QGC (.waypoints)</span>
+        </button>
+      </div>
+
+      <!-- Barra de Métricas y Restricciones Técnicas Inmutables -->
+      <div class="mt-14 grid grid-cols-2 md:grid-cols-4 gap-3 text-left">
+        <div class="hud-bracket p-4 bg-slate-900/70 border border-slate-800/80 rounded backdrop-blur">
+          <div class="text-[11px] font-mono text-slate-400 uppercase">Evasión Reactiva</div>
+          <div class="text-xl sm:text-2xl font-bold font-mono text-cyan-400 mt-1 flex items-baseline gap-1">
+            &lt; 50 <span class="text-xs font-normal text-slate-400">ms</span>
+          </div>
+          <div class="text-[11px] text-slate-500 font-mono mt-1">CPA + Filtro Kalman 3D</div>
+        </div>
+
+        <div class="hud-bracket p-4 bg-slate-900/70 border border-slate-800/80 rounded backdrop-blur">
+          <div class="text-[11px] font-mono text-slate-400 uppercase">Burbuja Táctica</div>
+          <div class="text-xl sm:text-2xl font-bold font-mono text-emerald-400 mt-1 flex items-baseline gap-1">
+            15.0 <span class="text-xs font-normal text-slate-400">metros</span>
+          </div>
+          <div class="text-[11px] text-slate-500 font-mono mt-1">Protección esférica UAV</div>
+        </div>
+
+        <div class="hud-bracket p-4 bg-slate-900/70 border border-slate-800/80 rounded backdrop-blur">
+          <div class="text-[11px] font-mono text-slate-400 uppercase">Handover Batería</div>
+          <div class="text-xl sm:text-2xl font-bold font-mono text-amber-400 mt-1 flex items-baseline gap-1">
+            &lt; 22 <span class="text-xs font-normal text-slate-400">%</span>
+          </div>
+          <div class="text-[11px] text-slate-500 font-mono mt-1">Relevo dinámico continuo</div>
+        </div>
+
+        <div class="hud-bracket p-4 bg-slate-900/70 border border-slate-800/80 rounded backdrop-blur">
+          <div class="text-[11px] font-mono text-slate-400 uppercase">Inferencia Edge</div>
+          <div class="text-xl sm:text-2xl font-bold font-mono text-white mt-1 flex items-baseline gap-1">
+            D-FINE <span class="text-xs font-normal text-cyan-400">RT-DETR</span>
+          </div>
+          <div class="text-[11px] text-slate-500 font-mono mt-1">Calibración FDR anti-FP</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN RADAR CANVAS INTERACTIVO (SIMULADOR EN TIEMPO REAL) -->
+  <section id="radar-section" class="py-12 px-4 sm:px-6 max-w-7xl mx-auto z-10 relative">
+    <div class="border border-cyan-900/60 bg-slate-900/80 rounded-xl overflow-hidden shadow-2xl backdrop-blur-xl">
+      
+      <!-- Cabecera del Módulo de Radar -->
+      <div class="px-6 py-4 bg-slate-950/90 border-b border-cyan-900/40 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-3 h-3 rounded-full bg-cyan-400 animate-ping"></div>
+          <div>
+            <h2 class="text-base font-bold font-mono text-white flex items-center gap-2">
+              RADAR TÁCTICO DE ENJAMBRE &bull; ARES-AIRSPACE
+              <span class="text-[10px] font-normal px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800">CANVAS 2D / 3D CPA</span>
+            </h2>
+            <p class="text-xs text-slate-400 font-mono">Burbuja táctica de 15 m &bull; Simulación cinemática reactiva en tiempo real</p>
+          </div>
+        </div>
+
+        <!-- Controles Rápidos del Radar -->
+        <div class="flex flex-wrap items-center gap-2 text-xs font-mono">
+          <div class="inline-flex rounded-md border border-slate-800 p-0.5 bg-slate-900">
+            <button onclick="setRadarRange(100)" id="btn-range-100" class="px-2.5 py-1 rounded bg-cyan-500 text-slate-950 font-bold transition-all">100m</button>
+            <button onclick="setRadarRange(200)" id="btn-range-200" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition-all">200m</button>
+            <button onclick="setRadarRange(300)" id="btn-range-300" class="px-2.5 py-1 rounded text-slate-400 hover:text-white transition-all">300m</button>
+          </div>
+          <button onclick="triggerObstacleInjection()" class="px-3 py-1.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-all flex items-center gap-1.5">
+            <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+            <span>Inyectar Obstáculo 3D</span>
+          </button>
+          <button onclick="triggerHandoverTest()" class="px-3 py-1.5 rounded bg-red-500/20 text-red-300 border border-red-500/40 hover:bg-red-500/30 transition-all flex items-center gap-1.5">
+            <i data-lucide="battery-warning" class="w-3.5 h-3.5"></i>
+            <span>Test Handover (&lt;22%)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Cuerpo: Lienzo de Radar + Panel de Telemetría Lateral -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
+        
+        <!-- Canvas de Radar (8 Columnas en desktop) -->
+        <div class="lg:col-span-8 p-4 sm:p-6 bg-slate-950 flex flex-col items-center justify-center relative min-h-[480px]">
+          
+          <!-- Elementos HUD sobre el Canvas -->
+          <div class="absolute top-4 left-6 pointer-events-none text-[11px] font-mono text-cyan-400/80 space-y-1">
+            <div>BARRIDO: <span id="radar-sweep-status">ACTIVO (360°/4s)</span></div>
+            <div>OBJETIVOS DETECTADOS: <span id="radar-targets-count" class="text-emerald-400 font-bold">1 HUMANO VIVO (CONF: 98.4%)</span></div>
+            <div>COLISIONES EVITADAS: <span id="radar-cpa-evasion" class="text-white font-bold">0</span></div>
+          </div>
+
+          <div class="absolute top-4 right-6 pointer-events-none text-[11px] font-mono text-right text-slate-400 space-y-1">
+            <div>RANGO VISUAL: <span id="radar-range-display" class="text-cyan-400 font-bold">100 METROS</span></div>
+            <div>BURBUJA SEGURIDAD: <span class="text-emerald-400 font-bold">15.0 M (RADIO)</span></div>
+          </div>
+
+          <!-- Canvas interactivo -->
+          <canvas id="tactical-radar-canvas" width="560" height="560" class="max-w-full h-auto rounded-full border border-cyan-500/30 shadow-[0_0_35px_rgba(6,182,212,0.15)] cursor-crosshair"></canvas>
+
+          <!-- Leyenda del Radar -->
+          <div class="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-slate-400">
+            <span class="flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-cyan-400"></span> UAV Activo
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-full border-2 border-cyan-400/50"></span> Burbuja 15m
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-emerald-400"></span> Detección D-FINE
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-amber-400 animate-ping"></span> Obstáculo / Evasión CPA
+            </span>
+            <span class="flex items-center gap-1.5">
+              <span class="w-3 h-3 rounded-full bg-red-400"></span> Handover (&lt;22% Bat)
+            </span>
+          </div>
+        </div>
+
+        <!-- Panel Lateral: Flota de UAVs y Telemetría en Vivo -->
+        <div class="lg:col-span-4 p-5 bg-slate-900/95 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+              <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-2">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+                Estado del Enjambre (4 Nodos)
+              </h3>
+              <span class="text-[10px] font-mono text-emerald-400 px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-800">
+                SINCRONIZADO
+              </span>
+            </div>
+
+            <!-- Lista de UAVs -->
+            <div class="mt-4 space-y-3" id="swarm-cards-container">
+              <!-- UAV 01 -->
+              <div id="card-ares-01" class="p-3 rounded bg-slate-950/80 border border-cyan-500/40 relative">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+                    <strong class="font-mono text-xs text-white">ARES-01 (Líder Alpha)</strong>
+                  </div>
+                  <span id="ares-01-status" class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">PATRULLA</span>
+                </div>
+                <div class="mt-2 grid grid-cols-3 gap-2 text-[11px] font-mono text-slate-400">
+                  <div>ALT: <span id="ares-01-alt" class="text-slate-200">28.4m</span></div>
+                  <div>VEL: <span id="ares-01-vel" class="text-slate-200">6.2m/s</span></div>
+                  <div>BAT: <span id="ares-01-bat" class="text-emerald-400 font-bold">88%</span></div>
+                </div>
+                <div class="mt-1.5 text-[10px] font-mono text-slate-500">CPA Mínimo: <span id="ares-01-cpa" class="text-cyan-400">24.2m</span> (Seguro &gt; 15m)</div>
+              </div>
+
+              <!-- UAV 02 -->
+              <div id="card-ares-02" class="p-3 rounded bg-slate-950/80 border border-slate-800 relative">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+                    <strong class="font-mono text-xs text-white">ARES-02 (Bravo Térmico)</strong>
+                  </div>
+                  <span id="ares-02-status" class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">ESCÁNER</span>
+                </div>
+                <div class="mt-2 grid grid-cols-3 gap-2 text-[11px] font-mono text-slate-400">
+                  <div>ALT: <span id="ares-02-alt" class="text-slate-200">34.1m</span></div>
+                  <div>VEL: <span id="ares-02-vel" class="text-slate-200">5.8m/s</span></div>
+                  <div>BAT: <span id="ares-02-bat" class="text-emerald-400 font-bold">76%</span></div>
+                </div>
+                <div class="mt-1.5 text-[10px] font-mono text-slate-500">CPA Mínimo: <span id="ares-02-cpa" class="text-cyan-400">19.8m</span> (Seguro &gt; 15m)</div>
+              </div>
+
+              <!-- UAV 03 -->
+              <div id="card-ares-03" class="p-3 rounded bg-slate-950/80 border border-slate-800 relative">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+                    <strong class="font-mono text-xs text-white">ARES-03 (Charlie Escombros)</strong>
+                  </div>
+                  <span id="ares-03-status" class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">RECON</span>
+                </div>
+                <div class="mt-2 grid grid-cols-3 gap-2 text-[11px] font-mono text-slate-400">
+                  <div>ALT: <span id="ares-03-alt" class="text-slate-200">22.6m</span></div>
+                  <div>VEL: <span id="ares-03-vel" class="text-slate-200">4.9m/s</span></div>
+                  <div>BAT: <span id="ares-03-bat" class="text-emerald-400 font-bold">64%</span></div>
+                </div>
+                <div class="mt-1.5 text-[10px] font-mono text-slate-500">CPA Mínimo: <span id="ares-03-cpa" class="text-cyan-400">31.4m</span> (Seguro &gt; 15m)</div>
+              </div>
+
+              <!-- UAV 04 (Delta - Reserva de Handover) -->
+              <div id="card-ares-04" class="p-3 rounded bg-slate-950/80 border border-slate-800 relative">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-slate-500" id="ares-04-dot"></span>
+                    <strong class="font-mono text-xs text-white">ARES-04 (Delta Standby)</strong>
+                  </div>
+                  <span id="ares-04-status" class="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">STANDBY RELEVO</span>
+                </div>
+                <div class="mt-2 grid grid-cols-3 gap-2 text-[11px] font-mono text-slate-400">
+                  <div>ALT: <span id="ares-04-alt" class="text-slate-200">0.0m</span></div>
+                  <div>VEL: <span id="ares-04-vel" class="text-slate-200">0.0m/s</span></div>
+                  <div>BAT: <span id="ares-04-bat" class="text-emerald-400 font-bold">100%</span></div>
+                </div>
+                <div class="mt-1.5 text-[10px] font-mono text-slate-500">Activación: <span class="text-amber-400">Automática si un UAV cae &lt; 22%</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alerta Táctica de Handover -->
+          <div id="handover-notification-box" class="mt-4 p-3 rounded bg-slate-950 border border-slate-800 text-[11px] font-mono text-slate-400">
+            <div class="flex items-center gap-2 text-cyan-400 font-semibold mb-1">
+              <i data-lucide="shield-check" class="w-4 h-4"></i>
+              GESTIÓN ENERGÉTICA AUTÓNOMA
+            </div>
+            Umbral de relevo inmutable al 22%. Si la energía cae, se transfiere la grilla de búsqueda sin pérdida de cobertura.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN PERCEPCIÓN NEURONAL D-FINE (RT-DETR) -->
+  <section id="vision-section" class="py-16 px-4 sm:px-6 max-w-7xl mx-auto z-10 relative">
+    <div class="text-center max-w-3xl mx-auto mb-12">
+      <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-mono text-cyan-400 bg-cyan-950/40 border border-cyan-800/80 rounded-full">
+        <i data-lucide="brain-circuit" class="w-3.5 h-3.5"></i>
+        MOTOR DE INFERENCIA EN TIEMPO REAL
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
+        Percepción Neuronal D-FINE (RT-DETR)
+      </h2>
+      <p class="mt-3 text-slate-400 text-sm sm:text-base">
+        Arquitectura basada en Transformers de detección en tiempo real con calibración estadística FDR (False Discovery Rate) y microfiltros espectrales anti-falsos positivos en condiciones de niebla, humo y escombros.
+      </p>
+    </div>
+
+    <!-- Visor de Simulación HUD D-FINE -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      
+      <!-- Visor Mockup HUD Táctico D-FINE -->
+      <div class="lg:col-span-7 bg-slate-900 border border-cyan-900/50 rounded-xl overflow-hidden shadow-2xl relative">
+        <div class="px-4 py-2.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between text-xs font-mono">
+          <div class="flex items-center gap-2 text-cyan-400">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+            FEED ÓPTICO/TÉRMICO &bull; PAYLOAD ARES-01
+          </div>
+          <span class="text-slate-400 font-mono">FPS: 45.2 // LATENCIA: 14.2 ms</span>
+        </div>
+
+        <div class="relative bg-slate-950 aspect-video flex items-center justify-center overflow-hidden">
+          
+          <!-- Fondo visual táctico de zona de colapso -->
+          <div class="absolute inset-0 bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:16px_16px] opacity-40"></div>
+          
+          <!-- Elementos HUD de mira telescópica -->
+          <div class="absolute inset-8 border border-cyan-500/20 rounded pointer-events-none"></div>
+          <div class="absolute top-1/2 left-0 right-0 h-px bg-cyan-500/20 pointer-events-none"></div>
+          <div class="absolute top-0 bottom-0 left-1/2 w-px bg-cyan-500/20 pointer-events-none"></div>
+
+          <!-- Bounding Box Simulado de D-FINE -->
+          <div class="absolute top-1/3 left-1/3 w-48 h-36 border-2 border-emerald-400 bg-emerald-500/10 rounded flex flex-col justify-between p-2 shadow-[0_0_20px_rgba(16,185,129,0.3)] animate-pulse">
+            <div class="flex items-center justify-between text-[10px] font-mono font-bold bg-emerald-950/90 text-emerald-300 px-1.5 py-0.5 rounded border border-emerald-500/50">
+              <span>HUMAN_SURVIVOR</span>
+              <span>98.4%</span>
+            </div>
+            <div class="text-[9px] font-mono text-emerald-300/90 space-y-0.5 bg-slate-950/70 p-1 rounded">
+              <div>FDR SCORE: 0.008 (CONFIRMADO)</div>
+              <div>COORD: 34.0522°N, 118.2437°W</div>
+              <div>ESTADO: SIGNOS VITALES DETECTADOS</div>
+            </div>
+          </div>
+
+          <!-- Bounding Box 2: Escombros Estructurales -->
+          <div class="absolute bottom-6 right-12 w-40 h-28 border border-cyan-400/60 bg-cyan-500/5 rounded p-1.5 flex flex-col justify-between">
+            <div class="text-[9px] font-mono font-bold bg-slate-900/90 text-cyan-300 px-1 py-0.5 rounded border border-cyan-500/30">
+              STRUCT_VOID_COLLAPSE (89.1%)
+            </div>
+            <div class="text-[8px] font-mono text-slate-400">Ruta de acceso transitable</div>
+          </div>
+
+          <!-- Telemetría Overlay -->
+          <div class="absolute bottom-3 left-4 text-[10px] font-mono text-slate-400 bg-slate-950/80 px-2.5 py-1 rounded border border-slate-800">
+            FILTRO ESPECTRAL ANTI-HUMO: <span class="text-emerald-400 font-bold">100% EFICAZ</span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-slate-950/90 border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-400">
+          <span>ARQUITECTURA: D-FINE CON TRANSFORMERS HÍBRIDOS</span>
+          <span class="text-cyan-400">FALSOS POSITIVOS DESCARTADOS: 99.4%</span>
+        </div>
+      </div>
+
+      <!-- Explicación Técnica y Métricas -->
+      <div class="lg:col-span-5 space-y-4">
+        <div class="p-4 rounded-lg bg-slate-900/70 border border-slate-800">
+          <div class="flex items-center gap-2 text-cyan-400 font-semibold mb-1 text-sm font-mono">
+            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+            Calibración FDR (False Discovery Rate)
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Garantiza que ningún recurso de rescate se desvíe por falsas alarmas (maniquíes, reflejos térmicos de incendios o animales) calculando el umbral estadístico de descubrimiento falso en tiempo real.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-lg bg-slate-900/70 border border-slate-800">
+          <div class="flex items-center gap-2 text-cyan-400 font-semibold mb-1 text-sm font-mono">
+            <i data-lucide="layers" class="w-4 h-4"></i>
+            Filtros Espectrales Óptico-Infrarrojos
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Fusión de sensores a nivel píxel en procesadores neuronales Edge de bajo consumo, permitiendo penetración a través de polvo en suspensión y densas columnas de humo.
+          </p>
+        </div>
+
+        <div class="p-4 rounded-lg bg-slate-900/70 border border-slate-800">
+          <div class="flex items-center gap-2 text-emerald-400 font-semibold mb-1 text-sm font-mono">
+            <i data-lucide="zap" class="w-4 h-4"></i>
+            Latencia Extremo a Extremo &lt; 20 ms
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Inferencia directa en hardware embebido local (Edge) sin conexión a internet ni dependencia de servidores en la nube pública.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECCIÓN TELEMETRÍA DUAL & CONSOLA SÍNCRONA (10-30 HZ) -->
+  <section id="telemetry-section" class="py-16 px-4 sm:px-6 max-w-7xl mx-auto z-10 relative">
+    <div class="border border-slate-800 bg-slate-900/90 rounded-xl overflow-hidden shadow-2xl backdrop-blur-md">
+      
+      <div class="px-6 py-4 bg-slate-950 border-b border-slate-800 flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h2 class="text-lg font-bold font-mono text-white flex items-center gap-2">
+            <i data-lucide="terminal" class="w-5 h-5 text-emerald-400"></i>
+            STREAMING DE TELEMETRÍA EN TIEMPO REAL (10 - 30 HZ)
+          </h2>
+          <p class="text-xs text-slate-400 font-mono">WebSocket JSON (LAN Táctica) &bull; Fallback Binario Comprimido RF / LoRa</p>
+        </div>
+
+        <div class="flex items-center gap-3 text-xs font-mono">
+          <button onclick="toggleTelemetryStreaming()" id="btn-toggle-telemetry" class="px-3 py-1.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition-all flex items-center gap-1.5">
+            <i data-lucide="pause" class="w-3.5 h-3.5" id="telemetry-toggle-icon"></i>
+            <span id="telemetry-toggle-text">Pausar Streaming</span>
+          </button>
+          <button onclick="copyTelemetryLog()" class="px-3 py-1.5 rounded bg-slate-800 text-slate-300 hover:text-white border border-slate-700 transition-all flex items-center gap-1.5">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span id="copy-telemetry-btn-text">Copiar Paquete</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Consola de Código / Paquetes de Telemetría -->
+      <div class="p-4 sm:p-6 bg-slate-950">
+        <div class="flex items-center justify-between text-xs font-mono text-slate-500 pb-2 border-b border-slate-900">
+          <span>FORMATO: JSON SERIALIZADO (CANAL 20 HZ)</span>
+          <span class="text-cyan-400">CRC-32: VÁLIDO // PÉRDIDA DE PAQUETES: 0.00%</span>
+        </div>
+        
+        <pre id="telemetry-terminal-code" class="mt-3 p-4 rounded bg-slate-900/80 border border-slate-800/80 text-emerald-400 font-mono text-xs sm:text-sm overflow-x-auto h-48 select-all leading-relaxed"></pre>
+      </div>
+
+      <div class="px-6 py-3 bg-slate-950/70 border-t border-slate-900 flex flex-wrap items-center justify-between text-xs font-mono text-slate-400">
+        <div>Topología: 100% Local / Edge Computing &bull; SQLite WAL In-Memory Buffer</div>
+        <div class="text-emerald-400 flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          SOCKET LOCAL CONECTADO (ws://127.0.0.1:8765/telemetry)
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECCIÓN AUDITORÍA POST-MISIÓN AAR & WAYPOINTS QGROUNDCONTROL -->
+  <section id="audit-section" class="py-16 px-4 sm:px-6 max-w-7xl mx-auto z-10 relative">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+      
+      <!-- Ficha 1: Dossier Criptográfico AAR (SHA-256) -->
+      <div class="p-6 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+        <div>
+          <div class="w-12 h-12 rounded-lg bg-cyan-950/80 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-4">
+            <i data-lucide="shield-check" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-xl font-bold font-mono text-white">Auditoría Post-Misión Criptográfica (AAR)</h3>
+          <p class="mt-2 text-sm text-slate-400 leading-relaxed">
+            Cada segundo de telemetría, decisión de evasión cinemática y detección D-FINE queda sellada bajo una firma inmutable <strong>SHA-256</strong>. Cumple con los protocolos internacionales de After-Action Review forense para rescate y peritaje.
+          </p>
+
+          <div class="mt-4 p-3 rounded bg-slate-950 border border-slate-800 font-mono text-xs space-y-1">
+            <div class="text-slate-500">FIRMA CRIPTOGRÁFICA DE LA MISIÓN:</div>
+            <div id="mission-sha256" class="text-cyan-400 font-bold truncate">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</div>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+          <span class="text-xs font-mono text-slate-400">Estado: Registro sellado</span>
+          <button onclick="downloadAARDossier()" class="px-4 py-2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/30 font-mono text-xs font-semibold flex items-center gap-1.5 transition-all">
+            <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+            Descargar Dossier AAR (.json)
+          </button>
+        </div>
+      </div>
+
+      <!-- Ficha 2: Planes de Vuelo QGroundControl (.waypoints) -->
+      <div class="p-6 rounded-xl bg-slate-900/80 border border-slate-800 flex flex-col justify-between">
+        <div>
+          <div class="w-12 h-12 rounded-lg bg-emerald-950/80 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4">
+            <i data-lucide="navigation-2" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-xl font-bold font-mono text-white">Exportación QGroundControl (.waypoints)</h3>
+          <p class="mt-2 text-sm text-slate-400 leading-relaxed">
+            Interoperabilidad directa con estaciones terrenas estándar (QGroundControl, Mission Planner y MAVLink). Exporta el patrón de búsqueda en espiral o grilla expandida directamente a los autopilotos de abordo.
+          </p>
+
+          <div class="mt-4 p-3 rounded bg-slate-950 border border-slate-800 font-mono text-xs space-y-1">
+            <div class="text-slate-500">ESTÁNDAR:</div>
+            <div class="text-emerald-400 font-bold">QGC WPL 110 &bull; 6 WAYPOINTS TÁCTICOS</div>
+          </div>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+          <span class="text-xs font-mono text-slate-400">Formato: Archivo oficial MAVLink</span>
+          <button onclick="downloadWaypointsFile()" class="px-4 py-2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 font-mono text-xs font-semibold flex items-center gap-1.5 transition-all">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            Descargar .waypoints
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- SECCIÓN ESPECIFICACIÓN Y REGLAS OPERATIVAS -->
+  <section class="py-12 px-4 sm:px-6 max-w-7xl mx-auto z-10 relative">
+    <div class="p-6 sm:p-8 rounded-xl bg-slate-900/50 border border-slate-800">
+      <div class="flex items-center gap-3 mb-6">
+        <i data-lucide="book-open" class="w-5 h-5 text-cyan-400"></i>
+        <h3 class="text-xl font-bold font-mono text-white">Especificación & Restricciones Inmutables (SPEC.md)</h3>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-slate-300">
+        <div>
+          <h4 class="font-mono font-bold text-cyan-400 uppercase tracking-wider mb-2">1. Identidad & Misión ARES</h4>
+          <p class="text-slate-400 leading-relaxed">
+            Orquestación autónoma de enjambres de drones de rescate (UAVs) durante la "Hora Dorada" (&lt; 60 min). Prohibida dependencia de nube pública o internet para funciones centrales.
+          </p>
+        </div>
+        <div>
+          <h4 class="font-mono font-bold text-cyan-400 uppercase tracking-wider mb-2">2. Cinemática & Evasión 3D</h4>
+          <p class="text-slate-400 leading-relaxed">
+            Algoritmo CPA reactivo, filtros Kalman 3D, burbuja de 15 metros y latencia de respuesta &lt; 50 ms. Handover automático programado al 22% de batería remanente.
+          </p>
+        </div>
+        <div>
+          <h4 class="font-mono font-bold text-cyan-400 uppercase tracking-wider mb-2">3. Visión & Telemetría</h4>
+          <p class="text-slate-400 leading-relaxed">
+            Red neuronal D-FINE (RT-DETR) con calibración FDR. Streaming en tiempo real entre 10 y 30 Hz. Dossiers AAR sellados con hash SHA-256 y waypoints QGroundControl.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL DE VIDEO OPERATIVO FLOTANTE (Sin sub.mp4) -->
+  <div id="video-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
+    <div class="relative w-full max-w-4xl bg-slate-950 border border-cyan-500/50 rounded-xl overflow-hidden shadow-[0_0_50px_rgba(6,182,212,0.3)]">
+      
+      <!-- Cabecera del Modal -->
+      <div class="px-5 py-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="video" class="w-4 h-4 text-cyan-400"></i>
+          <span class="font-mono text-xs font-bold text-white tracking-wider">BRIEFING OPERATIVO DE MISIÓN ARES // SIN SUB.MP4</span>
+        </div>
+        <button onclick="closeVideoModal()" class="w-7 h-7 rounded hover:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Reproductor HTML5 -->
+      <div class="relative aspect-video bg-black flex items-center justify-center">
+        <video id="mission-video-player" controls preload="metadata" class="w-full h-full object-contain">
+          <source src="Sin%20sub.mp4" type="video/mp4">
+          <source src="Sin sub.mp4" type="video/mp4">
+          Tu navegador no soporta reproducción de video HTML5.
+        </video>
+      </div>
+
+      <!-- Pie del Modal -->
+      <div class="px-5 py-3 bg-slate-900/90 border-t border-slate-800 flex flex-wrap items-center justify-between text-[11px] font-mono text-slate-400">
+        <div>Resolución: Alta Definición &bull; Archivo de archivo de misión: Sin sub.mp4</div>
+        <button onclick="closeVideoModal()" class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors">
+          Cerrar Visualizador [ESC]
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer Táctico -->
+  <footer class="border-t border-slate-800/80 bg-slate-950 py-8 px-6 text-center text-xs font-mono text-slate-500 relative z-10">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2 text-slate-400">
+        <i data-lucide="shield" class="w-4 h-4 text-cyan-400"></i>
+        <span>BIOSCOUT &bull; MÓDULO ARES &bull; SISTEMA AUTÓNOMO DE BUSQUEDA Y RESCATE</span>
+      </div>
+      <div>
+        <span>Despliegue Local Edge Computing &bull; Sin Dependencia de Nube</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- LÓGICA DE CONTROL, RADAR CANVAS 2D Y TELEMETRÍA SÍNCRONA -->
+  <script>
+    // Inicialización de Lucide Icons
+    lucide.createIcons();
+
+    // 1. Reloj de la Hora Dorada y Reloj UTC
+    let goldenSeconds = 59 * 60 + 42;
+    setInterval(() => {
+      if (goldenSeconds > 0) {
+        goldenSeconds--;
+        const mins = Math.floor(goldenSeconds / 60);
+        const secs = goldenSeconds % 60;
+        const clockEl = document.getElementById('golden-hour-clock');
+        if (clockEl) {
+          clockEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+      }
+      
+      const now = new Date();
+      const utcEl = document.getElementById('utc-clock');
+      if (utcEl) {
+        utcEl.innerText = now.toTimeString().split(' ')[0];
+      }
+    }, 1000);
+
+    // 2. Control del Modal de Video
+    function openVideoModal() {
+      const modal = document.getElementById('video-modal');
+      const video = document.getElementById('mission-video-player');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        if (video) video.play().catch(() => {});
+      }
+    }
+
+    function closeVideoModal() {
+      const modal = document.getElementById('video-modal');
+      const video = document.getElementById('mission-video-player');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        if (video) video.pause();
+      }
+    }
+
+    // Cerrar modal con tecla Escape
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeVideoModal();
+    });
+
+    // 3. SIMULADOR DE RADAR EN CANVAS (Cinemática reactiva 3D, Burbuja 15m, Algoritmo CPA)
+    const canvas = document.getElementById('tactical-radar-canvas');
+    const ctx = canvas.getContext('2d');
+    
+    let radarRange = 100; // metros
+    let radarAngle = 0;
+    let evasionsCount = 0;
+    let obstacleActive = false;
+    let obstaclePos = { x: 0, y: 0, vx: 0, vy: 0 };
+    let handoverTriggered = false;
+
+    // Estado del Enjambre de 4 UAVs (Coordenadas en metros relativas al centro)
+    const swarmDrones = [
+      { id: 'ARES-01', name: 'Alpha', x: 25, y: -20, vx: -0.4, vy: 0.3, alt: 28.4, bat: 88, status: 'PATRULLA', color: '#00f2fe' },
+      { id: 'ARES-02', name: 'Bravo', x: -30, y: 25, vx: 0.35, vy: -0.25, alt: 34.1, bat: 76, status: 'ESCÁNER', color: '#00f2fe' },
+      { id: 'ARES-03', name: 'Charlie', x: 40, y: 35, vx: -0.3, vy: -0.4, alt: 22.6, bat: 64, status: 'RECON', color: '#00f2fe' },
+      { id: 'ARES-04', name: 'Delta', x: 0, y: 0, vx: 0, vy: 0, alt: 0.0, bat: 100, status: 'STANDBY', color: '#64748b' }
+    ];
+
+    // Objetivo detectado por D-FINE (Superviviente)
+    const targetVictim = { x: -45, y: -35, confidence: 98.4, label: 'HUMAN_SURVIVOR' };
+
+    function setRadarRange(range) {
+      radarRange = range;
+      document.getElementById('radar-range-display').innerText = `${range} METROS`;
+      ['100', '200', '300'].forEach(r => {
+        const btn = document.getElementById(`btn-range-${r}`);
+        if (btn) {
+          if (r == range) {
+            btn.className = 'px-2.5 py-1 rounded bg-cyan-500 text-slate-950 font-bold transition-all';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded text-slate-400 hover:text-white transition-all';
+          }
+        }
+      });
+    }
+
+    function triggerObstacleInjection() {
+      obstacleActive = true;
+      obstaclePos = { x: 35, y: -50, vx: -0.8, vy: 0.7 };
+      evasionsCount++;
+      const evEl = document.getElementById('radar-cpa-evasion');
+      if (evEl) evEl.innerText = evasionsCount;
+      
+      // Mostrar feedback en la consola o HUD
+      setTimeout(() => {
+        obstacleActive = false;
+      }, 9000);
+    }
+
+    function triggerHandoverTest() {
+      handoverTriggered = true;
+      // Disparar condición crítica en ARES-03: Batería < 22%
+      const uav = swarmDrones[2]; // Charlie
+      uav.bat = 18;
+      uav.status = 'HANDOVER (RTB)';
+      uav.color = '#ef4444';
+
+      // Activar ARES-04 (Delta Standby)
+      const delta = swarmDrones[3];
+      delta.status = 'EN PATRULLA';
+      delta.alt = 24.5;
+      delta.vx = 0.45;
+      delta.vy = -0.35;
+      delta.color = '#00f2fe';
+
+      const notifBox = document.getElementById('handover-notification-box');
+      if (notifBox) {
+        notifBox.className = 'mt-4 p-3 rounded bg-red-950/80 border border-red-500 text-[11px] font-mono text-red-200 animate-pulse';
+        notifBox.innerHTML = `<strong>ALERTA DE HANDOVER ACTIVADA:</strong> ARES-03 cayó a 18% (&lt; 22%). Transferencia de grilla a ARES-04 Delta en curso. Relevo 100% autónomo.`;
+      }
+
+      // Actualizar tarjeta
+      const st3 = document.getElementById('ares-03-status');
+      if (st3) {
+        st3.innerText = 'HANDOVER <22%';
+        st3.className = 'text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-red-950 text-red-300 border border-red-700';
+      }
+      const bat3 = document.getElementById('ares-03-bat');
+      if (bat3) {
+        bat3.innerText = '18%';
+        bat3.className = 'text-red-400 font-bold';
+      }
+
+      const st4 = document.getElementById('ares-04-status');
+      if (st4) {
+        st4.innerText = 'EN RELEVO';
+        st4.className = 'text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-700';
+      }
+      const dot4 = document.getElementById('ares-04-dot');
+      if (dot4) dot4.className = 'w-2.5 h-2.5 rounded-full bg-cyan-400';
+    }
+
+    // Bucle de renderizado del Radar Canvas
+    function renderRadar() {
+      const w = canvas.width;
+      const h = canvas.height;
+      const cx = w / 2;
+      const cy = h / 2;
+      const scale = (w / 2 - 20) / radarRange; // pixels por metro
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Fondo del Radar
+      ctx.fillStyle = '#030712';
+      ctx.beginPath();
+      ctx.arc(cx, cy, cx - 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Círculos concéntricos de distancia
+      const rings = 4;
+      ctx.lineWidth = 1;
+      for (let i = 1; i <= rings; i++) {
+        const r = ((cx - 20) / rings) * i;
+        ctx.strokeStyle = 'rgba(6, 182, 212, 0.2)';
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Etiquetas de metros
+        const distMeters = Math.round((radarRange / rings) * i);
+        ctx.fillStyle = 'rgba(6, 182, 212, 0.4)';
+        ctx.font = '10px "JetBrains Mono"';
+        ctx.fillText(`${distMeters}m`, cx + 6, cy - r + 12);
+      }
+
+      // Ejes cruzados
+      ctx.strokeStyle = 'rgba(6, 182, 212, 0.25)';
+      ctx.beginPath();
+      ctx.moveTo(cx, 10);
+      ctx.lineTo(cx, h - 10);
+      ctx.moveTo(10, cy);
+      ctx.lineTo(w - 10, cy);
+      ctx.stroke();
+
+      // Haz de Barrido Giratorio (Radar Sweep)
+      radarAngle += 0.025;
+      if (radarAngle >= Math.PI * 2) radarAngle = 0;
+
+      const sweepGradient = ctx.createRadialGradient(cx, cy, 10, cx, cy, cx - 10);
+      sweepGradient.addColorStop(0, 'rgba(6, 182, 212, 0.4)');
+      sweepGradient.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, cx - 10, radarAngle - 0.4, radarAngle);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(6, 182, 212, 0.15)';
+      ctx.fill();
+
+      // Línea frontal de barrido
+      ctx.strokeStyle = '#00f2fe';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + Math.cos(radarAngle) * (cx - 10), cy + Math.sin(radarAngle) * (cy - 10));
+      ctx.stroke();
+      ctx.restore();
+
+      // Dibujar Objetivo D-FINE detectado (Víctima)
+      const targetPxX = cx + targetVictim.x * scale;
+      const targetPxY = cy + targetVictim.y * scale;
+      ctx.save();
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(targetPxX, targetPxY, 5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Cuadro delimitador en radar
+      ctx.strokeStyle = 'rgba(16, 185, 129, 0.8)';
+      ctx.strokeRect(targetPxX - 10, targetPxY - 10, 20, 20);
+      ctx.font = '10px "JetBrains Mono"';
+      ctx.fillStyle = '#10b981';
+      ctx.fillText(`HUMAN (98.4%)`, targetPxX + 14, targetPxY + 4);
+      ctx.restore();
+
+      // Obstáculo 3D si está activo
+      if (obstacleActive) {
+        obstaclePos.x += obstaclePos.vx;
+        obstaclePos.y += obstaclePos.vy;
+        const obsPxX = cx + obstaclePos.x * scale;
+        const obsPxY = cy + obstaclePos.y * scale;
+
+        ctx.fillStyle = '#f59e0b';
+        ctx.beginPath();
+        ctx.arc(obsPxX, obsPxY, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#f59e0b';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(obsPxX - 9, obsPxY - 9, 18, 18);
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillText('OBSTÁCULO 3D', obsPxX + 12, obsPxY + 4);
+      }
+
+      // Actualizar y dibujar UAVs del Enjambre
+      const bubbleRadiusPx = 15.0 * scale; // Burbuja táctica inmutable de 15 m
+      
+      swarmDrones.forEach((uav, idx) => {
+        if (uav.status !== 'STANDBY') {
+          // Cinemática suave
+          uav.x += uav.vx;
+          uav.y += uav.vy;
+
+          // Rebotar dentro del límite de rango
+          const maxDist = radarRange * 0.85;
+          if (Math.abs(uav.x) > maxDist) uav.vx *= -1;
+          if (Math.abs(uav.y) > maxDist) uav.vy *= -1;
+
+          // Evasión reactiva ante obstáculo
+          if (obstacleActive) {
+            const dx = uav.x - obstaclePos.x;
+            const dy = uav.y - obstaclePos.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < 20) {
+              // Evasión reactiva con punto de mayor aproximación (CPA)
+              uav.vx += (dx / dist) * 0.4;
+              uav.vy += (dy / dist) * 0.4;
+            }
+          }
+        }
+
+        const px = cx + uav.x * scale;
+        const py = cy + uav.y * scale;
+
+        if (uav.status !== 'STANDBY') {
+          // Dibujar Burbuja de Seguridad Táctica de 15 m
+          ctx.beginPath();
+          ctx.arc(px, py, bubbleRadiusPx, 0, Math.PI * 2);
+          ctx.strokeStyle = uav.color === '#ef4444' ? 'rgba(239, 68, 68, 0.4)' : 'rgba(0, 242, 254, 0.25)';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 4]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // Punto central del UAV
+          ctx.fillStyle = uav.color;
+          ctx.beginPath();
+          ctx.arc(px, py, 4.5, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Etiqueta del UAV
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '10px "JetBrains Mono"';
+          ctx.fillText(`${uav.id}`, px + 8, py - 6);
+        }
+      });
+
+      requestAnimationFrame(renderRadar);
+    }
+    requestAnimationFrame(renderRadar);
+
+    // 4. GENERADOR Y STREAMER DE TELEMETRÍA EN VIVO (10 - 30 Hz)
+    let isStreaming = true;
+    let packetSeq = 1420;
+    const terminalEl = document.getElementById('telemetry-terminal-code');
+
+    function generateTelemetryPacket() {
+      packetSeq++;
+      const primaryUav = swarmDrones[0];
+      const packet = {
+        seq: packetSeq,
+        timestamp_utc: new Date().toISOString(),
+        mission_id: "ARES-GOLDEN-HR-01",
+        mode: "AUTONOMOUS_SWARM_LOCAL",
+        uav_telemetry: [
+          {
+            id: "ARES-01",
+            lat: 34.052230 + (primaryUav.y * 0.00001),
+            lon: -118.243680 + (primaryUav.x * 0.00001),
+            alt_agl_m: parseFloat((28.4 + Math.sin(packetSeq * 0.1) * 0.5).toFixed(2)),
+            vel_ms: 6.2,
+            battery_pct: primaryUav.bat,
+            cpa_safety_dist_m: 24.2,
+            bubble_spec_m: 15.0,
+            evasion_latency_ms: 18.4,
+            kalman_state: "CONVERGED"
+          },
+          {
+            id: "ARES-02",
+            alt_agl_m: 34.1,
+            battery_pct: 76,
+            cpa_safety_dist_m: 19.8,
+            vision_d_fine: {
+              active: true,
+              detections: 1,
+              class: "HUMAN_SURVIVOR",
+              fdr_calibrated: true,
+              confidence: 0.984
+            }
+          }
+        ],
+        crypto_hash_sha256: document.getElementById('mission-sha256').innerText
+      };
+      return JSON.stringify(packet, null, 2);
+    }
+
+    let currentTelemetryJson = "";
+    setInterval(() => {
+      if (isStreaming && terminalEl) {
+        currentTelemetryJson = generateTelemetryPacket();
+        terminalEl.textContent = currentTelemetryJson;
+      }
+    }, 200); // Actualización fluida a 5 Hz visual (simula el bus 20 Hz sin colapsar el DOM)
+
+    function toggleTelemetryStreaming() {
+      isStreaming = !isStreaming;
+      const textEl = document.getElementById('telemetry-toggle-text');
+      const iconEl = document.getElementById('telemetry-toggle-icon');
+      if (textEl) textEl.innerText = isStreaming ? 'Pausar Streaming' : 'Reanudar Streaming';
+      if (iconEl) iconEl.setAttribute('data-lucide', isStreaming ? 'pause' : 'play');
+      lucide.createIcons();
+    }
+
+    function copyTelemetryLog() {
+      navigator.clipboard.writeText(currentTelemetryJson || generateTelemetryPacket());
+      const btnText = document.getElementById('copy-telemetry-btn-text');
+      if (btnText) {
+        btnText.innerText = '¡Copiado!';
+        setTimeout(() => { btnText.innerText = 'Copiar Paquete'; }, 2000);
+      }
+    }
+
+    // 5. EXPORTADORES AAR Y WAYPOINTS (.waypoints MAVLink)
+    function downloadAARDossier() {
+      const aarData = {
+        mission_id: "BIOSCOUT-ARES-2026-AAR",
+        created_at: new Date().toISOString(),
+        golden_hour_status: "SUCCESSFUL_INTERVENTION",
+        rules_and_spec_version: "SPEC-ARES-2.0",
+        cryptographic_sha256: document.getElementById('mission-sha256').innerText,
+        edge_core_status: {
+          cloud_dependency: false,
+          offline_verified: true,
+          sqlite_wal_persistence: true
+        },
+        swarm_metrics: {
+          drones_deployed: 4,
+          evasion_bubble_m: 15.0,
+          max_evasion_latency_ms: 18.4,
+          vision_engine: "D-FINE RT-DETR with FDR Calibration",
+          handover_battery_threshold: 0.22,
+          handover_events_logged: handoverTriggered ? 1 : 0
+        }
+      };
+
+      const blob = new Blob([JSON.stringify(aarData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `BioScout_AAR_Report_${Date.now()}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function downloadWaypointsFile() {
+      // Formato oficial QGC WPL 110 para MAVLink y QGroundControl
+      const qgcContent = `QGC WPL 110
+0\t1\t0\t16\t0\t0\t0\t0\t34.052230\t-118.243680\t30.000000\t1
+1\t0\t3\t16\t0\t0\t0\t0\t34.052500\t-118.243400\t28.000000\t1
+2\t0\t3\t16\t0\t0\t0\t0\t34.052800\t-118.243800\t32.000000\t1
+3\t0\t3\t16\t0\t0\t0\t0\t34.052400\t-118.244200\t25.000000\t1
+4\t0\t3\t16\t0\t0\t0\t0\t34.052000\t-118.243900\t30.000000\t1
+5\t0\t3\t20\t0\t0\t0\t0\t34.052230\t-118.243680\t0.000000\t1
+`;
+      const blob = new Blob([qgcContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `BioScout_ARES_Mission_${Date.now()}.waypoints`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

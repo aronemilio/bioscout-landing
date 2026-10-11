@@ -1,0 +1,4 @@
+# Archivos multimedia de gran tamaño (>100MB) para evitar límites de GitHub
+*.mp4
+*.mkv
+*.mov
