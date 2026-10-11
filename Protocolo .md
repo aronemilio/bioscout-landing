@@ -12,3 +12,6 @@ Antes de desarrollar vistas:
    - Si detectas una contradicción entre una solicitud y las reglas de `SPEC.md`, señala la discrepancia y consulta o aplica la corrección requerida según la instrucción del usuario.
 6. ESTILO DE ENTREGA: Respuestas directas, orientadas a terminal Linux, con código completo sin placeholders y sin texto de relleno.
 7. ACTUALIZA EL PROTOCOLO CADA VEZ QUE SEA NECESARIA.
+
+HISTORIAL OPERATIVO:
+- [2026-10-10T23:56:00-05:00] Inicializado script `~/.agy/scripts/git_sync.sh` y repositorio Git local con exclusión preventiva de binarios multimedia pesados (`*.mp4`). Implementadas especificaciones de `SPEC.md` v2.0 y `frontend-motion-dev` en `index.html`.
