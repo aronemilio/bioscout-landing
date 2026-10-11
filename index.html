@@ -47,81 +47,8 @@
   </script>
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <style>
-    /* Estilos globales y atmósfera de rescate ante terremoto */
-    body {
-      background-color: #070504;
-      color: #f8fafc;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    /* Fondo de Cascada Continua (Ceniza, polvo en suspensión, sismos) */
-    #infinite-waterfall-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 1;
-      opacity: 0.65;
-    }
-
-    /* Enjambre de drones que acompaña la lectura */
-    #swarm-companion-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 20;
-    }
-
-    /* Tarjetas suaves tipo cristal de rescate */
-    .soft-card {
-      background: rgba(22, 16, 12, 0.78);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(217, 119, 6, 0.15);
-      border-radius: 1.5rem;
-      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.65);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .soft-card:hover {
-      border-color: rgba(6, 182, 212, 0.4);
-      transform: translateY(-3px);
-      box-shadow: 0 20px 40px -10px rgba(6, 182, 212, 0.15);
-    }
-
-    /* Capa de textura de ciudad colapsada y grietas */
-    .earthquake-backdrop {
-      background-image: 
-        radial-gradient(ellipse at 50% 0%, rgba(217, 119, 6, 0.15) 0%, transparent 65%),
-        radial-gradient(ellipse at 80% 40%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 20% 80%, rgba(180, 83, 9, 0.12) 0%, transparent 60%);
-    }
-
-    /* Video integrado con marco suave y luz de reflector */
-    .video-cascade-glow {
-      box-shadow: 0 0 50px -10px rgba(6, 182, 212, 0.3), 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-    }
-
-    /* Scrollbar suave */
-    ::-webkit-scrollbar {
-      width: 7px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #070504;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #2b1f17;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #d97706;
-    }
-  </style>
+  <!-- Hoja de Estilos Modularizada -->
+  <link rel="stylesheet" href="src/css/styles.css">
 </head>
 <body class="selection:bg-amber-500 selection:text-black relative overflow-x-hidden earthquake-backdrop">
 
@@ -299,6 +226,8 @@
       <!-- Reproductor de Video HTML5 Embebido Directamente -->
       <div class="relative aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center group shadow-inner">
         <video id="cascade-main-video" autoplay muted loop playsinline controls class="w-full h-full object-cover sm:object-contain">
+          <source src="assets/video/Sin%20sub.mp4" type="video/mp4">
+          <source src="assets/video/Sin sub.mp4" type="video/mp4">
           <source src="Sin%20sub.mp4" type="video/mp4">
           <source src="Sin sub.mp4" type="video/mp4">
           Tu navegador no soporta reproducción de video HTML5.
@@ -336,7 +265,7 @@
         </p>
       </div>
 
-      <!-- Secuencia de Colapso (Del PPT: Terremoto -> Infraestructura -> Comunicaciones -> Personas aisladas -> Respuesta lenta) -->
+      <!-- Secuencia de Colapso -->
       <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         
         <div class="p-4 rounded-2xl bg-earth-950/70 border border-earth-800 text-center">
@@ -399,7 +328,7 @@
 
   </section>
 
-  <!-- SECCIÓN 3: EL FLUJO OPERATIVO BIOSCOUT (CÓMO FUNCIONA) -->
+  <!-- SECCIÓN 3: EL FLUJO OPERATIVO BIOSCOUT -->
   <section id="proceso" class="py-20 px-4 sm:px-6 max-w-6xl mx-auto z-10 relative">
     
     <div class="text-center max-w-3xl mx-auto mb-16">
@@ -415,10 +344,9 @@
       </p>
     </div>
 
-    <!-- Las 5 Etapas del Flujo (PPT Slide 6) -->
+    <!-- Las 5 Etapas del Flujo -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
       
-      <!-- Paso 1 -->
       <div class="soft-card p-5 rounded-2xl flex flex-col justify-between">
         <div>
           <span class="text-xs font-mono text-amber-400 font-bold">01 &bull; DETECCIÓN</span>
@@ -430,7 +358,6 @@
         <div class="mt-4 pt-3 border-t border-earth-800 text-[10px] text-earth-dust/60 font-mono">Disparo de alarma</div>
       </div>
 
-      <!-- Paso 2 -->
       <div class="soft-card p-5 rounded-2xl flex flex-col justify-between">
         <div>
           <span class="text-xs font-mono text-orange-400 font-bold">02 &bull; DESPLIEGUE</span>
@@ -442,7 +369,6 @@
         <div class="mt-4 pt-3 border-t border-earth-800 text-[10px] text-earth-dust/60 font-mono">Despegue autónomo</div>
       </div>
 
-      <!-- Paso 3 -->
       <div class="soft-card p-5 rounded-2xl flex flex-col justify-between">
         <div>
           <span class="text-xs font-mono text-cyan-400 font-bold">03 &bull; PERCEPCIÓN</span>
@@ -454,7 +380,6 @@
         <div class="mt-4 pt-3 border-t border-earth-800 text-[10px] text-earth-dust/60 font-mono">Filtros FDR anti-humo</div>
       </div>
 
-      <!-- Paso 4 -->
       <div class="soft-card p-5 rounded-2xl flex flex-col justify-between">
         <div>
           <span class="text-xs font-mono text-teal-400 font-bold">04 &bull; LOCALIZACIÓN</span>
@@ -466,7 +391,6 @@
         <div class="mt-4 pt-3 border-t border-earth-800 text-[10px] text-earth-dust/60 font-mono">Georreferenciación</div>
       </div>
 
-      <!-- Paso 5 -->
       <div class="soft-card p-5 rounded-2xl flex flex-col justify-between">
         <div>
           <span class="text-xs font-mono text-emerald-400 font-bold">05 &bull; COORDINACIÓN</span>
@@ -783,531 +707,12 @@
     </div>
   </footer>
 
-  <!-- LÓGICA DE CONTROL: CASCADA DE TIERRA/CENIZA, ENJAMBRE Y CONTROLES DEL VIDEO -->
-  <script>
-    // Inicializar Iconos Lucide
-    lucide.createIcons();
-
-    // 1. CONTROL DEL VIDEO DIRECTO EN LA CASCADA
-    const mainVideo = document.getElementById('cascade-main-video');
-
-    function toggleVideoPlayback() {
-      if (!mainVideo) return;
-      const playIcon = document.getElementById('video-play-icon');
-      const playText = document.getElementById('video-play-text');
-      
-      if (mainVideo.paused) {
-        mainVideo.play();
-        if (playText) playText.innerText = 'Pausar';
-        if (playIcon) playIcon.setAttribute('data-lucide', 'pause');
-      } else {
-        mainVideo.pause();
-        if (playText) playText.innerText = 'Reproducir';
-        if (playIcon) playIcon.setAttribute('data-lucide', 'play');
-      }
-      lucide.createIcons();
-    }
-
-    function toggleMuteVideo() {
-      if (!mainVideo) return;
-      mainVideo.muted = !mainVideo.muted;
-      const muteText = document.getElementById('video-mute-text');
-      const muteIcon = document.getElementById('video-mute-icon');
-      if (muteText) muteText.innerText = mainVideo.muted ? 'Sonido' : 'Silenciar';
-      if (muteIcon) muteIcon.setAttribute('data-lucide', mainVideo.muted ? 'volume-2' : 'volume-x');
-      lucide.createIcons();
-    }
-
-    function fullscreenVideo() {
-      if (!mainVideo) return;
-      if (mainVideo.requestFullscreen) mainVideo.requestFullscreen();
-      else if (mainVideo.webkitRequestFullscreen) mainVideo.webkitRequestFullscreen();
-    }
-
-    // 2. LIENZO DE CASCADA INFINITA: CIUDAD EN COLAPSO, POLVO, CENIZAS Y HACES DE LUZ
-    const waterfallCanvas = document.getElementById('infinite-waterfall-canvas');
-    const wCtx = waterfallCanvas.getContext('2d');
-    let wWidth, wHeight;
-    let scrollVelocity = 0;
-    let lastScrollY = window.scrollY;
-
-    function resizeWaterfallCanvas() {
-      wWidth = waterfallCanvas.width = window.innerWidth;
-      wHeight = waterfallCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeWaterfallCanvas);
-    resizeWaterfallCanvas();
-
-    window.addEventListener('scroll', () => {
-      const curY = window.scrollY;
-      scrollVelocity = Math.min(30, Math.abs(curY - lastScrollY));
-      lastScrollY = curY;
-    });
-
-    // Partículas de polvo de derrumbe y partículas en suspensión
-    const dustParticles = [];
-    const DUST_COUNT = 110;
-
-    for (let i = 0; i < DUST_COUNT; i++) {
-      dustParticles.push({
-        x: Math.random() * window.innerWidth,
-        y: Math.random() * window.innerHeight,
-        radius: Math.random() * 2.5 + 0.8,
-        length: Math.random() * 30 + 10,
-        speedY: Math.random() * 2.0 + 0.8,
-        speedX: (Math.random() - 0.5) * 0.8,
-        opacity: Math.random() * 0.45 + 0.15,
-        // Tonos de tierra, ceniza y chispas cálidas
-        hue: Math.random() > 0.4 ? 35 : (Math.random() > 0.5 ? 180 : 25)
-      });
-    }
-
-    function renderEarthquakeWaterfall() {
-      wCtx.clearRect(0, 0, wWidth, wHeight);
-
-      scrollVelocity *= 0.94;
-      const boost = scrollVelocity * 0.85;
-
-      for (let p of dustParticles) {
-        p.y += p.speedY + boost;
-        p.x += p.speedX;
-
-        if (p.y > wHeight) {
-          p.y = -p.length;
-          p.x = Math.random() * wWidth;
-        }
-        if (p.x < 0) p.x = wWidth;
-        if (p.x > wWidth) p.x = 0;
-
-        const grad = wCtx.createLinearGradient(p.x, p.y, p.x + p.speedX * 3, p.y + p.length);
-        grad.addColorStop(0, `hsla(${p.hue}, 80%, 45%, 0)`);
-        grad.addColorStop(0.7, `hsla(${p.hue}, 85%, 55%, ${p.opacity})`);
-        grad.addColorStop(1, `hsla(${p.hue}, 90%, 65%, ${p.opacity * 1.4})`);
-
-        wCtx.strokeStyle = grad;
-        wCtx.lineWidth = p.radius;
-        wCtx.beginPath();
-        wCtx.moveTo(p.x, p.y);
-        wCtx.lineTo(p.x + p.speedX * 3, p.y + p.length);
-        wCtx.stroke();
-      }
-
-      requestAnimationFrame(renderEarthquakeWaterfall);
-    }
-    requestAnimationFrame(renderEarthquakeWaterfall);
-
-    // 3. ENJAMBRE DE DRONES QUE DESCIENDE ACOMPAÑANDO EL SCROLL
-    const companionCanvas = document.getElementById('swarm-companion-canvas');
-    const cCtx = companionCanvas.getContext('2d');
-    let cWidth, cHeight;
-
-    function resizeCompanionCanvas() {
-      cWidth = companionCanvas.width = window.innerWidth;
-      cHeight = companionCanvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCompanionCanvas);
-    resizeCompanionCanvas();
-
-    const swarmUAVs = [
-      { id: 'ARES-01', x: 200, y: 150, targetX: 200, targetY: 150, rotorAngle: 0, color: '#00f2fe', label: 'Alpha' },
-      { id: 'ARES-02', x: 260, y: 180, targetX: 260, targetY: 180, rotorAngle: 0, color: '#f59e0b', label: 'Bravo' },
-      { id: 'ARES-03', x: 140, y: 190, targetX: 140, targetY: 190, rotorAngle: 0, color: '#10b981', label: 'Charlie' },
-      { id: 'ARES-04', x: 200, y: 240, targetX: 200, targetY: 240, rotorAngle: 0, color: '#fb923c', label: 'Delta' }
-    ];
-
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    window.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
-
-    function updateCompanionFormations() {
-      const scrollY = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const progress = docHeight > 0 ? scrollY / docHeight : 0;
-
-      let centerX, centerY;
-
-      if (progress < 0.20) {
-        // En Hero: Formación en Diamante en altitud
-        centerX = cWidth > 768 ? cWidth * 0.82 : cWidth * 0.5;
-        centerY = cHeight * 0.40;
-        swarmUAVs[0].targetX = centerX;        swarmUAVs[0].targetY = centerY - 45;
-        swarmUAVs[1].targetX = centerX + 50;   swarmUAVs[1].targetY = centerY;
-        swarmUAVs[2].targetX = centerX - 50;   swarmUAVs[2].targetY = centerY;
-        swarmUAVs[3].targetX = centerX;        swarmUAVs[3].targetY = centerY + 45;
-
-      } else if (progress < 0.45) {
-        // En Video en Cascada: Los drones orbitan suavemente alrededor del marco del video
-        centerX = cWidth > 768 ? cWidth * 0.14 : cWidth * 0.5;
-        centerY = cHeight * 0.50;
-        const t = Date.now() * 0.0018;
-        swarmUAVs.forEach((d, idx) => {
-          const a = t + (idx * Math.PI / 2);
-          d.targetX = centerX + Math.cos(a) * 45;
-          d.targetY = centerY + Math.sin(a) * 45;
-        });
-
-      } else if (progress < 0.70) {
-        // En El Flujo / Proceso: Formación en Línea de Rastreo sobre el terreno
-        centerX = cWidth > 768 ? cWidth * 0.86 : cWidth * 0.5;
-        centerY = cHeight * 0.52;
-        swarmUAVs[0].targetX = centerX - 35;   swarmUAVs[0].targetY = centerY - 35;
-        swarmUAVs[1].targetX = centerX + 35;   swarmUAVs[1].targetY = centerY - 35;
-        swarmUAVs[2].targetX = centerX - 35;   swarmUAVs[2].targetY = centerY + 35;
-        swarmUAVs[3].targetX = centerX + 35;   swarmUAVs[3].targetY = centerY + 35;
-
-      } else {
-        // En Integrantes / Equipo: Formación de escolta horizontal
-        centerX = cWidth * 0.5;
-        centerY = cHeight * 0.25;
-        swarmUAVs[0].targetX = centerX - 90;   swarmUAVs[0].targetY = centerY;
-        swarmUAVs[1].targetX = centerX - 30;   swarmUAVs[1].targetY = centerY;
-        swarmUAVs[2].targetX = centerX + 30;   swarmUAVs[2].targetY = centerY;
-        swarmUAVs[3].targetX = centerX + 90;   swarmUAVs[3].targetY = centerY;
-      }
-
-      // Repulsión ante cursor
-      swarmUAVs.forEach(d => {
-        const dx = d.targetX - mouseX;
-        const dy = d.targetY - mouseY;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 100) {
-          d.targetX += (dx / dist) * 25;
-          d.targetY += (dy / dist) * 25;
-        }
-      });
-    }
-
-    function drawSwarmDrone(ctx, drone) {
-      const x = drone.x;
-      const y = drone.y;
-
-      ctx.save();
-      ctx.translate(x, y);
-
-      // Haz de escaneo cónico hacia abajo sobre los escombros
-      const coneGrad = ctx.createRadialGradient(0, 0, 5, 0, 35, 30);
-      coneGrad.addColorStop(0, 'rgba(6, 182, 212, 0.25)');
-      coneGrad.addColorStop(1, 'rgba(6, 182, 212, 0)');
-      ctx.fillStyle = coneGrad;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(-25, 45);
-      ctx.lineTo(25, 45);
-      ctx.closePath();
-      ctx.fill();
-
-      // Brazos del cuadricóptero
-      ctx.strokeStyle = '#33271e';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.moveTo(-15, -15); ctx.lineTo(15, 15);
-      ctx.moveTo(15, -15); ctx.lineTo(-15, 15);
-      ctx.stroke();
-
-      // Rotores
-      drone.rotorAngle += 0.8;
-      const rotorPositions = [[-15, -15], [15, -15], [-15, 15], [15, 15]];
-      ctx.strokeStyle = drone.color;
-      ctx.lineWidth = 1.5;
-
-      rotorPositions.forEach(([rx, ry], idx) => {
-        ctx.save();
-        ctx.translate(rx, ry);
-        ctx.rotate(drone.rotorAngle * (idx % 2 === 0 ? 1 : -1));
-        ctx.beginPath();
-        ctx.ellipse(0, 0, 8, 2.5, 0, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
-      });
-
-      // Cuerpo central
-      ctx.fillStyle = '#160f0b';
-      ctx.strokeStyle = drone.color;
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.roundRect(-8, -8, 16, 16, 4);
-      ctx.fill();
-      ctx.stroke();
-
-      // Ojo de sensor
-      ctx.fillStyle = drone.color;
-      ctx.beginPath();
-      ctx.arc(0, -2, 3, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Etiqueta
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '9px "Plus Jakarta Sans"';
-      ctx.textAlign = 'center';
-      ctx.fillText(drone.label, 0, 24);
-
-      ctx.restore();
-    }
-
-    function renderCompanionSwarm() {
-      cCtx.clearRect(0, 0, cWidth, cHeight);
-      updateCompanionFormations();
-
-      // Enlaces de red Mesh entre drones
-      cCtx.strokeStyle = 'rgba(217, 119, 6, 0.25)';
-      cCtx.lineWidth = 1;
-      cCtx.setLineDash([3, 3]);
-      for (let i = 0; i < swarmUAVs.length; i++) {
-        for (let j = i + 1; j < swarmUAVs.length; j++) {
-          cCtx.beginPath();
-          cCtx.moveTo(swarmUAVs[i].x, swarmUAVs[i].y);
-          cCtx.lineTo(swarmUAVs[j].x, swarmUAVs[j].y);
-          cCtx.stroke();
-        }
-      }
-      cCtx.setLineDash([]);
-
-      swarmUAVs.forEach(d => {
-        d.x += (d.targetX - d.x) * 0.08;
-        d.y += (d.targetY - d.y) * 0.08;
-        drawSwarmDrone(cCtx, d);
-      });
-
-      requestAnimationFrame(renderCompanionSwarm);
-    }
-    requestAnimationFrame(renderCompanionSwarm);
-
-    // 4. RADAR TÁCTICO CON BURBUJA DE 15M Y HANDOVER AL 22%
-    const tRadarCanvas = document.getElementById('tactical-radar-canvas');
-    const trCtx = tRadarCanvas.getContext('2d');
-    let tRadarRange = 100;
-    let tRadarAngle = 0;
-    let tEvasions = 0;
-    let tObstacleActive = false;
-    let tObstaclePos = { x: 30, y: -40, vx: -0.6, vy: 0.5 };
-
-    const radarNodes = [
-      { id: 'ARES-01', x: 20, y: -18, vx: -0.3, vy: 0.25, bat: 88, color: '#00f2fe' },
-      { id: 'ARES-02', x: -25, y: 20, vx: 0.3, vy: -0.2, bat: 76, color: '#f59e0b' },
-      { id: 'ARES-03', x: 35, y: 30, vx: -0.25, vy: -0.35, bat: 64, color: '#10b981' },
-      { id: 'ARES-04', x: 0, y: 0, vx: 0, vy: 0, bat: 100, color: '#64748b' }
-    ];
-
-    function setRadarRange(r) {
-      tRadarRange = r;
-      document.getElementById('radar-range-display').innerText = `${r} METROS`;
-      ['100', '200', '300'].forEach(x => {
-        const btn = document.getElementById(`btn-range-${x}`);
-        if (btn) {
-          btn.className = x == r 
-            ? 'px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 font-bold transition-all'
-            : 'px-3 py-1.5 rounded-lg text-earth-dust hover:text-white transition-all';
-        }
-      });
-    }
-
-    function triggerObstacleInjection() {
-      tObstacleActive = true;
-      tObstaclePos = { x: 35, y: -45, vx: -0.7, vy: 0.6 };
-      tEvasions++;
-      const evEl = document.getElementById('radar-cpa-evasion');
-      if (evEl) evEl.innerText = tEvasions;
-      setTimeout(() => { tObstacleActive = false; }, 8500);
-    }
-
-    function triggerHandoverTest() {
-      const u3 = radarNodes[2];
-      u3.bat = 18;
-      u3.color = '#f43f5e';
-
-      const u4 = radarNodes[3];
-      u4.color = '#00f2fe';
-      u4.vx = 0.35;
-      u4.vy = -0.3;
-
-      const st3 = document.getElementById('ares-03-status');
-      if (st3) {
-        st3.innerText = 'HANDOVER <22%';
-        st3.className = 'text-[10px] px-2 py-0.5 rounded bg-rose-950 text-rose-300 font-mono';
-      }
-      const bat3 = document.getElementById('ares-03-bat');
-      if (bat3) {
-        bat3.innerText = '18%';
-        bat3.className = 'text-rose-400 font-bold';
-      }
-
-      const st4 = document.getElementById('ares-04-status');
-      if (st4) {
-        st4.innerText = 'EN RELEVO';
-        st4.className = 'text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 font-mono';
-      }
-      const dot4 = document.getElementById('ares-04-dot');
-      if (dot4) dot4.className = 'w-2.5 h-2.5 rounded-full bg-cyan-400';
-
-      const notif = document.getElementById('handover-notification-box');
-      if (notif) {
-        notif.className = 'mt-4 p-3.5 rounded-2xl bg-rose-950/80 border border-rose-500 text-xs text-rose-200 animate-pulse';
-        notif.innerHTML = '<strong>ALERTA DE RELEVO ACTIVA:</strong> ARES-03 descargado al 18% (&lt; 22%). Transferencia instantánea de sector a ARES-04 Delta en curso.';
-      }
-    }
-
-    function renderTacticalRadar() {
-      const w = tRadarCanvas.width;
-      const h = tRadarCanvas.height;
-      const cx = w / 2;
-      const cy = h / 2;
-      const scale = (cx - 20) / tRadarRange;
-
-      trCtx.clearRect(0, 0, w, h);
-
-      // Fondo oscuro táctico
-      trCtx.fillStyle = '#070504';
-      trCtx.beginPath();
-      trCtx.arc(cx, cy, cx - 2, 0, Math.PI * 2);
-      trCtx.fill();
-
-      // Círculos concéntricos
-      const rings = 4;
-      for (let i = 1; i <= rings; i++) {
-        const r = ((cx - 20) / rings) * i;
-        trCtx.strokeStyle = 'rgba(217, 119, 6, 0.2)';
-        trCtx.lineWidth = 1;
-        trCtx.beginPath();
-        trCtx.arc(cx, cy, r, 0, Math.PI * 2);
-        trCtx.stroke();
-
-        trCtx.fillStyle = 'rgba(217, 119, 6, 0.4)';
-        trCtx.font = '10px "JetBrains Mono"';
-        trCtx.fillText(`${Math.round((tRadarRange / rings) * i)}m`, cx + 6, cy - r + 12);
-      }
-
-      // Ejes
-      trCtx.strokeStyle = 'rgba(217, 119, 6, 0.25)';
-      trCtx.beginPath();
-      trCtx.moveTo(cx, 10); trCtx.lineTo(cx, h - 10);
-      trCtx.moveTo(10, cy); trCtx.lineTo(w - 10, cy);
-      trCtx.stroke();
-
-      // Haz giratorio
-      tRadarAngle += 0.025;
-      if (tRadarAngle >= Math.PI * 2) tRadarAngle = 0;
-
-      trCtx.save();
-      trCtx.beginPath();
-      trCtx.moveTo(cx, cy);
-      trCtx.arc(cx, cy, cx - 10, tRadarAngle - 0.35, tRadarAngle);
-      trCtx.closePath();
-      trCtx.fillStyle = 'rgba(6, 182, 212, 0.15)';
-      trCtx.fill();
-
-      trCtx.strokeStyle = '#06b6d4';
-      trCtx.lineWidth = 1.5;
-      trCtx.beginPath();
-      trCtx.moveTo(cx, cy);
-      trCtx.lineTo(cx + Math.cos(tRadarAngle) * (cx - 10), cy + Math.sin(tRadarAngle) * (cy - 10));
-      trCtx.stroke();
-      trCtx.restore();
-
-      // Sobreviviente detectado
-      const targetPxX = cx - 38 * scale;
-      const targetPxY = cy - 30 * scale;
-      trCtx.fillStyle = '#10b981';
-      trCtx.beginPath();
-      trCtx.arc(targetPxX, targetPxY, 5, 0, Math.PI * 2);
-      trCtx.fill();
-
-      trCtx.strokeStyle = 'rgba(16, 185, 129, 0.8)';
-      trCtx.strokeRect(targetPxX - 10, targetPxY - 10, 20, 20);
-      trCtx.font = '10px "JetBrains Mono"';
-      trCtx.fillStyle = '#10b981';
-      trCtx.fillText('SOBREVIVIENTE (98.4%)', targetPxX + 14, targetPxY + 4);
-
-      // Obstáculo
-      if (tObstacleActive) {
-        tObstaclePos.x += tObstaclePos.vx;
-        tObstaclePos.y += tObstaclePos.vy;
-        const opx = cx + tObstaclePos.x * scale;
-        const opy = cy + tObstaclePos.y * scale;
-
-        trCtx.fillStyle = '#f59e0b';
-        trCtx.beginPath();
-        trCtx.arc(opx, opy, 6, 0, Math.PI * 2);
-        trCtx.fill();
-
-        trCtx.strokeStyle = '#f59e0b';
-        trCtx.strokeRect(opx - 9, opy - 9, 18, 18);
-        trCtx.fillText('OBSTÁCULO 3D', opx + 12, opy + 4);
-      }
-
-      // Nodos y burbuja de 15m
-      const bubblePx = 15.0 * scale;
-      radarNodes.forEach(u => {
-        if (u.bat > 0 && (u.vx !== 0 || u.vy !== 0)) {
-          u.x += u.vx;
-          u.y += u.vy;
-          if (Math.abs(u.x) > tRadarRange * 0.8) u.vx *= -1;
-          if (Math.abs(u.y) > tRadarRange * 0.8) u.vy *= -1;
-
-          if (tObstacleActive) {
-            const dx = u.x - tObstaclePos.x;
-            const dy = u.y - tObstaclePos.y;
-            const dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 20) {
-              u.vx += (dx / dist) * 0.4;
-              u.vy += (dy / dist) * 0.4;
-            }
-          }
-
-          const px = cx + u.x * scale;
-          const py = cy + u.y * scale;
-
-          trCtx.beginPath();
-          trCtx.arc(px, py, bubblePx, 0, Math.PI * 2);
-          trCtx.strokeStyle = u.color === '#f43f5e' ? 'rgba(244, 63, 94, 0.4)' : 'rgba(6, 182, 212, 0.25)';
-          trCtx.lineWidth = 1.5;
-          trCtx.setLineDash([4, 4]);
-          trCtx.stroke();
-          trCtx.setLineDash([]);
-
-          trCtx.fillStyle = u.color;
-          trCtx.beginPath();
-          trCtx.arc(px, py, 4.5, 0, Math.PI * 2);
-          trCtx.fill();
-
-          trCtx.fillStyle = '#ffffff';
-          trCtx.font = '10px "Plus Jakarta Sans"';
-          trCtx.fillText(u.id, px + 8, py - 5);
-        }
-      });
-
-      requestAnimationFrame(renderTacticalRadar);
-    }
-    requestAnimationFrame(renderTacticalRadar);
-
-    // 5. EXPORTADORES AAR Y WAYPOINTS
-    function downloadAARDossier() {
-      const dossier = {
-        mission: "BIOSCOUT-ARES-SAR-EARTHQUAKE",
-        timestamp: new Date().toISOString(),
-        team: ["Valentín García Dueñas", "Jhoao López", "Aron Ayala"],
-        advisor: "Charlen Calero H.",
-        topology: "100% OFFLINE EDGE COMPUTING",
-        cryptographic_sha256: "7d9b23c5e840a1b94d8721c0e3f28192a83b1029384756c01928374650192834",
-        evasion_metrics: { bubble_radius_m: 15.0, latency_ms: 18.2 }
-      };
-      const blob = new Blob([JSON.stringify(dossier, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `BioScout_AAR_${Date.now()}.json`;
-      a.click();
-    }
-
-    function downloadWaypointsFile() {
-      const qgc = `QGC WPL 110\n0\t1\t0\t16\t0\t0\t0\t0\t34.052230\t-118.243680\t30.000000\t1\n1\t0\t3\t16\t0\t0\t0\t0\t34.052500\t-118.243400\t28.000000\t1\n2\t0\t3\t16\t0\t0\t0\t0\t34.052800\t-118.243800\t32.000000\t1\n3\t0\t3\t16\t0\t0\t0\t0\t34.052400\t-118.244200\t25.000000\t1\n4\t0\t3\t16\t0\t0\t0\t0\t34.052000\t-118.243900\t30.000000\t1\n5\t0\t3\t20\t0\t0\t0\t0\t34.052230\t-118.243680\t0.000000\t1\n`;
-      const blob = new Blob([qgc], { type: 'text/plain' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `BioScout_ARES_${Date.now()}.waypoints`;
-      a.click();
-    }
-  </script>
+  <!-- SCRIPTS MODULARES -->
+  <script src="src/js/waterfall.js"></script>
+  <script src="src/js/swarm.js"></script>
+  <script src="src/js/radar.js"></script>
+  <script src="src/js/video.js"></script>
+  <script src="src/js/exporters.js"></script>
+  <script src="src/js/main.js"></script>
 </body>
 </html>

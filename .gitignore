@@ -1,4 +1,12 @@
+# Dependencias
+node_modules/
+
 # Archivos multimedia de gran tamaño (>100MB) para evitar límites de GitHub
 *.mp4
 *.mkv
 *.mov
+assets/video/*.mp4
+
+# Archivos temporales del sistema
+.DS_Store
+Thumbs.db

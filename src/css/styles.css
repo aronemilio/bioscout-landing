@@ -1,0 +1,81 @@
+/**
+ * BioScout ARES - Estilos del Sistema & Atmósfera de Misión
+ * Temática: Terremoto, colapso de infraestructura, rescate autónomo y tierra
+ */
+
+body {
+  background-color: #070504;
+  color: #f8fafc;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Lienzo de Cascada Continua (Ceniza, polvo en suspensión, sismos) */
+#infinite-waterfall-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.65;
+}
+
+/* Enjambre de drones que acompaña la lectura */
+#swarm-companion-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* Tarjetas suaves tipo cristal de rescate */
+.soft-card {
+  background: rgba(22, 16, 12, 0.78);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(217, 119, 6, 0.15);
+  border-radius: 1.5rem;
+  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.65);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.soft-card:hover {
+  border-color: rgba(6, 182, 212, 0.4);
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px -10px rgba(6, 182, 212, 0.15);
+}
+
+/* Capa de textura de ciudad colapsada y grietas */
+.earthquake-backdrop {
+  background-image: 
+    radial-gradient(ellipse at 50% 0%, rgba(217, 119, 6, 0.15) 0%, transparent 65%),
+    radial-gradient(ellipse at 80% 40%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 20% 80%, rgba(180, 83, 9, 0.12) 0%, transparent 60%);
+}
+
+/* Video integrado con marco suave y luz de reflector */
+.video-cascade-glow {
+  box-shadow: 0 0 50px -10px rgba(6, 182, 212, 0.3), 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+}
+
+/* Scrollbar suave táctico */
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #070504;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2b1f17;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #d97706;
+}
