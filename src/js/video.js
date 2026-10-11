@@ -1,39 +1,51 @@
 /**
- * video.js - Controles del Video Embebido en la Cascada
- * Manejo de reproducción, silenciamiento, pantalla completa y sincronización de UI.
+ * video.js - Modal Táctico para Reproducción de Pitch de Video
+ * Control de apertura, cierre, autoplay, teclado ESC y pantalla completa.
  */
 
-const mainVideo = document.getElementById('cascade-main-video');
-
-function toggleVideoPlayback() {
-  if (!mainVideo) return;
-  const playIcon = document.getElementById('video-play-icon');
-  const playText = document.getElementById('video-play-text');
-  
-  if (mainVideo.paused) {
-    mainVideo.play();
-    if (playText) playText.innerText = 'Pausar';
-    if (playIcon) playIcon.setAttribute('data-lucide', 'pause');
-  } else {
-    mainVideo.pause();
-    if (playText) playText.innerText = 'Reproducir';
-    if (playIcon) playIcon.setAttribute('data-lucide', 'play');
+function openPitchModal() {
+  const modal = document.getElementById('pitch-modal');
+  const video = document.getElementById('pitch-modal-video');
+  if (modal) {
+    modal.classList.remove('hidden');
+    if (video) {
+      video.play().catch(() => {
+        console.log('Autoplay bloqueado por el navegador, requiriendo clic del usuario.');
+      });
+    }
   }
-  if (window.lucide) lucide.createIcons();
 }
 
-function toggleMuteVideo() {
-  if (!mainVideo) return;
-  mainVideo.muted = !mainVideo.muted;
-  const muteText = document.getElementById('video-mute-text');
-  const muteIcon = document.getElementById('video-mute-icon');
-  if (muteText) muteText.innerText = mainVideo.muted ? 'Sonido' : 'Silenciar';
-  if (muteIcon) muteIcon.setAttribute('data-lucide', mainVideo.muted ? 'volume-2' : 'volume-x');
-  if (window.lucide) lucide.createIcons();
+function closePitchModal() {
+  const modal = document.getElementById('pitch-modal');
+  const video = document.getElementById('pitch-modal-video');
+  if (modal) {
+    modal.classList.add('hidden');
+    if (video) {
+      video.pause();
+    }
+  }
 }
 
-function fullscreenVideo() {
-  if (!mainVideo) return;
-  if (mainVideo.requestFullscreen) mainVideo.requestFullscreen();
-  else if (mainVideo.webkitRequestFullscreen) mainVideo.webkitRequestFullscreen();
-}
+// Escuchar tecla Escape
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closePitchModal();
+  }
+});
+
+// Cerrar al hacer clic en el backdrop exterior
+document.addEventListener('DOMContentLoaded', () => {
+  const modal = document.getElementById('pitch-modal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closePitchModal();
+      }
+    });
+  }
+});
+
+// Exportar globalmente
+window.openPitchModal = openPitchModal;
+window.closePitchModal = closePitchModal;

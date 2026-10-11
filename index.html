@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BioScout | Inteligencia Aérea para Respuesta ante Emergencias</title>
+  <title>BioScout ARES | Inteligencia Aérea Táctica para Búsqueda y Rescate</title>
   
-  <!-- Tipografía Suave, Moderna y Amigable -->
+  <!-- Tipografía Técnica y Suave -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   
   <!-- Tailwind CSS & Lucide Icons -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -18,26 +18,18 @@
         extend: {
           fontFamily: {
             sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            display: ['"Outfit"', 'sans-serif'],
             mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
-            earth: {
-              950: '#070504',
-              900: '#120d09',
-              850: '#1b140f',
-              800: '#261c15',
-              700: '#3d2e23',
-              600: '#5a4536',
-              500: '#8c6b54',
-              amber: '#d97706',
-              warm: '#f59e0b',
-              dust: '#d4b996'
-            },
-            rescue: {
-              cyan: '#06b6d4',
-              teal: '#14b8a6',
+            tactical: {
+              950: '#020617',
+              900: '#090d16',
+              850: '#0d1322',
+              800: '#151e32',
+              700: '#1e293b',
+              cyan: '#00f2fe',
               emerald: '#10b981',
+              amber: '#f59e0b',
               red: '#f43f5e'
             }
           }
@@ -47,135 +39,527 @@
   </script>
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Hoja de Estilos Modularizada -->
+  <!-- Three.js para el Radar 3D Espacial -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- Estilos Tácticos Desacoplados -->
   <link rel="stylesheet" href="src/css/styles.css">
 </head>
-<body class="selection:bg-amber-500 selection:text-black relative overflow-x-hidden earthquake-backdrop">
+<body class="bg-slate-950 text-slate-100 font-sans selection:bg-cyan-500 selection:text-black overflow-x-hidden relative bg-tactical-grid">
 
-  <!-- CANVAS 1: CASCADA INFINITA DE POLVO, TIERRA Y HACES DE RESCATE -->
-  <canvas id="infinite-waterfall-canvas"></canvas>
+  <!-- CAPA DE DEGRADADO Y VIÑETA TÁCTICA -->
+  <div class="fixed inset-0 radar-vignette pointer-events-none z-0"></div>
 
-  <!-- CANVAS 2: ENJAMBRE DE DRONES QUE DESCIENDE ACOMPAÑANDO EL SCROLL -->
-  <canvas id="swarm-companion-canvas"></canvas>
+  <!-- 1. BARRA SUPERIOR DE TELEMETRÍA MILITAR & HORA DORADA -->
+  <div class="relative z-50 bg-slate-950/95 border-b border-cyan-900/40 text-xs font-mono py-1.5 px-4 text-slate-400">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Indicadores de Red y Edge Core -->
+      <div class="flex items-center gap-4">
+        <span class="inline-flex items-center gap-1.5 text-emerald-400 font-semibold tracking-wider">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          EDGE CORE: 100% OFFLINE (AUTÓNOMO LOCAL)
+        </span>
+        <span class="hidden md:inline-block text-slate-700">|</span>
+        <span class="hidden md:inline-flex items-center gap-1.5 text-cyan-400">
+          <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+          INFERENCIA D-FINE RT-DETR: ACTIVA (14.2 ms)
+        </span>
+        <span class="hidden lg:inline-block text-slate-700">|</span>
+        <span class="hidden lg:inline-flex items-center gap-1.5 text-slate-300">
+          <i data-lucide="radio" class="w-3.5 h-3.5 text-cyan-400"></i>
+          TELEMETRÍA RF/LoRa + WS: <strong id="metric-freq-val" class="text-cyan-300 font-bold">20.0 Hz</strong>
+        </span>
+      </div>
 
-  <!-- NAVBAR MODERNO Y SUAVE -->
-  <header class="fixed top-0 w-full z-40 bg-earth-950/80 backdrop-blur-xl border-b border-earth-800/80">
+      <!-- Reloj de Hora Dorada & Tiempo Zulu -->
+      <div class="flex items-center gap-4 font-mono">
+        <span class="text-amber-400 flex items-center gap-1.5 font-semibold bg-amber-950/40 px-2.5 py-0.5 rounded border border-amber-800/60">
+          <i data-lucide="timer" class="w-3.5 h-3.5 animate-pulse"></i>
+          HORA DORADA: <strong id="golden-hour-countdown" class="text-amber-300 font-bold">59:59</strong>
+        </span>
+        <span class="text-slate-400 hidden sm:inline flex items-center gap-1">
+          <i data-lucide="clock" class="w-3 h-3 text-slate-500"></i>
+          ZULU: <span id="zulu-clock" class="text-slate-200">00:00:00Z</span>
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- NAVBAR TÁCTICO MILITAR -->
+  <header class="sticky top-0 w-full z-40 bg-slate-950/85 backdrop-blur-xl border-b border-slate-800/80">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
       
-      <!-- Logotipo Amigable -->
+      <!-- Brand & Módulo -->
       <a href="#" class="flex items-center gap-3.5 group">
-        <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-600 via-orange-500 to-cyan-400 p-0.5 shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
-          <div class="w-full h-full bg-earth-950 rounded-[14px] flex items-center justify-center text-cyan-400">
-            <i data-lucide="shield-alert" class="w-5 h-5 text-amber-400"></i>
-          </div>
+        <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-cyan-950 via-slate-900 to-cyan-900 border border-cyan-500/40 flex items-center justify-center text-cyan-400 group-hover:border-cyan-400 transition-all shadow-[0_0_20px_rgba(6,182,212,0.25)]">
+          <i data-lucide="shield-alert" class="w-6 h-6 text-cyan-400"></i>
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="font-display font-extrabold text-xl text-white tracking-tight">BioScout</span>
-            <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-medium border border-amber-500/30">Misión ARES</span>
+            <span class="font-extrabold tracking-wider text-xl text-white font-mono">BIOSCOUT</span>
+            <span class="text-[10px] px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 font-mono font-bold tracking-widest">ARES</span>
           </div>
-          <p class="text-xs text-earth-dust/70">Cuando la tierra tiembla... cada segundo cuenta</p>
+          <p class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Swarm Autonomous Rescue Core</p>
         </div>
       </a>
 
-      <!-- Navegación Suave -->
-      <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-slate-300">
-        <a href="#impacto" class="hover:text-amber-400 transition-colors flex items-center gap-1.5">
-          <i data-lucide="activity" class="w-4 h-4 text-amber-400"></i> El Desastre
+      <!-- Menú de Navegación -->
+      <nav class="hidden md:flex items-center gap-7 text-xs font-mono uppercase tracking-wider text-slate-300">
+        <a href="#radar-3d-section" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="radar" class="w-3.5 h-3.5 text-cyan-400"></i> Radar 3D
         </a>
-        <a href="#video-seccion" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
-          <i data-lucide="play-circle" class="w-4 h-4 text-cyan-400"></i> Video en Cascada
+        <a href="#metricas-section" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="activity" class="w-3.5 h-3.5 text-emerald-400"></i> Métricas Clave
         </a>
-        <a href="#proceso" class="hover:text-amber-400 transition-colors flex items-center gap-1.5">
-          <i data-lucide="compass" class="w-4 h-4 text-orange-400"></i> Solución
+        <a href="#proceso-section" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="compass" class="w-3.5 h-3.5 text-cyan-400"></i> Planteamiento
         </a>
-        <a href="#simulador" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
-          <i data-lucide="radar" class="w-4 h-4 text-cyan-400"></i> Radar
+        <a href="#adopcion-section" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="briefcase" class="w-3.5 h-3.5 text-amber-400"></i> ¿Quién lo Usa?
         </a>
-        <a href="#equipo" class="hover:text-emerald-400 transition-colors flex items-center gap-1.5">
-          <i data-lucide="users" class="w-4 h-4 text-emerald-400"></i> Integrantes
+        <a href="#equipo-section" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+          <i data-lucide="users" class="w-3.5 h-3.5 text-cyan-400"></i> Equipo & SENATI
         </a>
       </nav>
 
-      <!-- Botón de Acción -->
+      <!-- Botones de Acción -->
       <div class="flex items-center gap-3">
-        <a href="#video-seccion" class="inline-flex items-center gap-2 px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 hover:opacity-95 shadow-lg shadow-amber-500/20 transition-all hover:scale-105">
-          <i data-lucide="play" class="w-4 h-4 fill-slate-950"></i>
-          <span>Ver Misión en Vivo</span>
+        <button onclick="openPitchModal()" class="inline-flex items-center gap-2 px-4 py-2 text-xs font-mono font-semibold rounded-lg bg-gradient-to-r from-cyan-950 via-slate-900 to-cyan-950 border border-cyan-500/50 text-cyan-300 hover:text-white hover:border-cyan-400 hover:shadow-[0_0_20px_rgba(6,182,212,0.35)] transition-all">
+          <i data-lucide="play" class="w-3.5 h-3.5 fill-cyan-400 text-cyan-400"></i>
+          <span>Pitch Video</span>
+        </button>
+        <a href="#radar-3d-section" class="hidden sm:inline-flex items-center gap-2 px-4 py-2 text-xs font-mono font-bold rounded-lg bg-cyan-400 text-slate-950 hover:bg-cyan-300 transition-all shadow-lg shadow-cyan-500/25">
+          <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
+          <span>Simulador 3D</span>
         </a>
       </div>
 
     </div>
   </header>
 
-  <!-- HERO: LA TIERRA TIEMBLA & DESPLIEGUE AÉREO -->
-  <section class="relative min-h-[92vh] pt-36 pb-20 px-4 sm:px-6 max-w-6xl mx-auto flex flex-col justify-center items-center text-center z-10">
-    
-    <!-- Píldora de Alerta y Enfoque Humano -->
-    <div class="inline-flex items-center gap-2 px-4 py-1.5 mb-6 text-xs sm:text-sm font-medium text-amber-300 bg-earth-900/80 border border-amber-500/30 rounded-full shadow-lg backdrop-blur-md">
-      <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-      <span>RESPUESTA CRÍTICA ANTE SISMOS Y COLAPSO DE INFRAESTRUCTURA</span>
-    </div>
-
-    <!-- Título Principal Suave y Cálido -->
-    <h1 class="text-4xl sm:text-6xl lg:text-7xl font-display font-extrabold text-white tracking-tight leading-tight max-w-5xl">
-      Cuando la tierra tiembla...
-      <span class="block text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-300 to-cyan-400">
-        cada segundo cuenta.
-      </span>
-    </h1>
-
-    <p class="mt-6 text-earth-dust/90 text-base sm:text-xl max-w-3xl leading-relaxed font-normal">
-      En terremotos y zonas de derrumbe, las comunicaciones se interrumpen y los caminos se bloquean. 
-      <strong>BioScout</strong> despliega un enjambre autónomo de drones con visión artificial de borde para 
-      <em>detectar, analizar, localizar y responder</em> sin depender de internet ni de la nube.
-    </p>
-
-    <!-- Botones de Interacción -->
-    <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-      <a href="#video-seccion" class="px-7 py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-slate-950 font-bold text-sm sm:text-base flex items-center gap-3 transition-all shadow-xl shadow-cyan-500/25 hover:scale-105">
-        <i data-lucide="play" class="w-5 h-5 fill-slate-950"></i>
-        <span>Reproducir Video en la Cascada</span>
-      </a>
-      <a href="#proceso" class="px-7 py-4 rounded-2xl soft-card text-white hover:text-amber-300 text-sm sm:text-base font-semibold flex items-center gap-2.5 transition-all">
-        <span>Conoce Cómo Funciona</span>
-        <i data-lucide="arrow-down" class="w-4 h-4 animate-bounce text-amber-400"></i>
-      </a>
-    </div>
-
-    <!-- Estadísticas Reales del Proyecto (Extraídas del PPT) -->
-    <div id="impacto" class="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl text-left">
+  <!-- 2. HERO SECTION TÁCTICA: HORA DORADA & ORQUESTACIÓN DE ENJAMBRE -->
+  <section class="relative pt-20 pb-24 px-4 sm:px-6 max-w-7xl mx-auto z-10">
+    <div class="text-center max-w-4xl mx-auto">
       
-      <div class="soft-card p-6 border-l-4 border-l-amber-500">
-        <div class="flex items-center justify-between text-xs font-mono text-amber-400 mb-2">
-          <span>VENEZUELA</span>
-          <i data-lucide="alert-octagon" class="w-4 h-4"></i>
+      <!-- Badge de Misión Táctica -->
+      <div class="inline-flex items-center gap-2.5 px-4 py-1.5 mb-6 text-xs font-mono text-cyan-300 bg-cyan-950/70 border border-cyan-500/40 rounded-full shadow-[0_0_20px_rgba(6,182,212,0.15)] backdrop-blur-md">
+        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+        <span>MODO ARES ACTIVO &bull; PROTOCOLO DE HORA DORADA (&lt; 60 MIN)</span>
+      </div>
+
+      <!-- Título de Alto Impacto -->
+      <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-[1.1]">
+        Orquestación Autónoma de
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-400">
+          Enjambres UAV en Catástrofes
+        </span>
+      </h1>
+
+      <p class="mt-6 text-slate-300 text-base sm:text-xl leading-relaxed max-w-3xl mx-auto font-normal">
+        Cuando un terremoto derriba las antenas de telecomunicaciones y bloquea el acceso terrestre, 
+        <strong>BioScout</strong> despliega un enjambre de rescate inteligente <strong>100% desconectado de la nube</strong>. 
+        Detección neuronal <strong>D-FINE (RT-DETR)</strong> y cinemática reactiva 3D con evasión en menos de 50 ms.
+      </p>
+
+      <!-- Botones de Acción Hero -->
+      <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <a href="#radar-3d-section" class="px-7 py-4 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-bold font-mono text-sm sm:text-base flex items-center gap-2.5 transition-all shadow-[0_0_30px_rgba(6,182,212,0.35)] hover:scale-105">
+          <i data-lucide="radar" class="w-5 h-5"></i>
+          <span>Explorar Radar 3D Interactivo</span>
+        </a>
+        <button onclick="openPitchModal()" class="px-7 py-4 rounded-xl tactical-card text-white hover:text-cyan-300 font-mono text-sm sm:text-base font-semibold flex items-center gap-2.5 transition-all border border-slate-700 hover:border-cyan-400">
+          <i data-lucide="play-circle" class="w-5 h-5 text-cyan-400"></i>
+          <span>Ver Pitch de Presentación (Video)</span>
+        </button>
+        <button onclick="downloadAARDossier()" class="px-6 py-4 rounded-xl tactical-card text-slate-300 hover:text-emerald-400 font-mono text-sm flex items-center gap-2 transition-all">
+          <i data-lucide="file-check-2" class="w-4 h-4 text-emerald-400"></i>
+          <span>Dossier AAR (SHA-256)</span>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 3. GRID CON MÉTRICAS CLAVE INMUTABLES -->
+  <section id="metricas-section" class="py-12 px-4 sm:px-6 max-w-7xl mx-auto z-10 relative">
+    
+    <div class="text-center max-w-2xl mx-auto mb-10">
+      <span class="text-xs font-mono uppercase tracking-widest text-cyan-400 font-bold">Parámetros Operativos Inmutables</span>
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-1">Garantías Técnicas de Despliegue</h2>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      
+      <!-- Métrica 1: Latencia Reactiva -->
+      <div class="hud-corner tactical-card p-6 border-l-4 border-l-cyan-400 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+            <span>LATENCIA REACTIVA</span>
+            <i data-lucide="zap" class="w-4 h-4 text-cyan-400"></i>
+          </div>
+          <div class="text-3xl sm:text-4xl font-extrabold font-mono text-cyan-400 mt-2 flex items-baseline gap-1">
+            <span id="metric-latency-val">17.8 ms</span>
+          </div>
+          <div class="text-xs font-mono text-slate-400 mt-1">Umbral estricto &lt; 50 ms</div>
+          <p class="text-xs text-slate-400 mt-3 leading-relaxed">
+            Algoritmo CPA y filtros Kalman tridimensionales de aproximación mínima para evasión inmediata de escombros en vuelo.
+          </p>
         </div>
-        <div class="text-3xl font-display font-extrabold text-white">+6.300 Víctimas</div>
-        <p class="text-xs text-earth-dust/80 mt-2 leading-relaxed">
-          Pérdidas humanas provocadas por respuesta tardía y aislamiento de comunicaciones ante sismos simultáneos.
+        <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          Tiempo real verificado
+        </div>
+      </div>
+
+      <!-- Métrica 2: Telemetría 10-30 Hz -->
+      <div class="hud-corner tactical-card p-6 border-l-4 border-l-emerald-400 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+            <span>STREAMING TELEMETRÍA</span>
+            <i data-lucide="radio" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div class="text-3xl sm:text-4xl font-extrabold font-mono text-emerald-400 mt-2 flex items-baseline gap-1">
+            10 &ndash; 30 <span class="text-lg font-normal text-slate-400">Hz</span>
+          </div>
+          <div class="text-xs font-mono text-slate-400 mt-1">Dual LAN WebSocket + LoRa</div>
+          <p class="text-xs text-slate-400 mt-3 leading-relaxed">
+            Canal de alta frecuencia con respaldo binario comprimido de largo alcance para penetrar túneles y hormigón armado.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          Pérdida de paquetes: 0.00%
+        </div>
+      </div>
+
+      <!-- Métrica 3: Burbuja Táctica 15m -->
+      <div class="hud-corner tactical-card p-6 border-l-4 border-l-cyan-400 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+            <span>BURBUJA DE SEGURIDAD</span>
+            <i data-lucide="shield" class="w-4 h-4 text-cyan-400"></i>
+          </div>
+          <div class="text-3xl sm:text-4xl font-extrabold font-mono text-cyan-400 mt-2 flex items-baseline gap-1">
+            15.0 <span class="text-lg font-normal text-slate-400">m</span>
+          </div>
+          <div class="text-xs font-mono text-slate-400 mt-1">Radio esférico por UAV</div>
+          <p class="text-xs text-slate-400 mt-3 leading-relaxed">
+            Encapsulamiento cinemático que previene colisiones entre múltiples drones volando simultáneamente en espacios reducidos.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          Cálculo esférico 3D CPA
+        </div>
+      </div>
+
+      <!-- Métrica 4: Edge Core Local -->
+      <div class="hud-corner tactical-card p-6 border-l-4 border-l-emerald-400 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between text-xs font-mono text-slate-400">
+            <span>EDGE COMPUTING LOCAL</span>
+            <i data-lucide="hard-drive" class="w-4 h-4 text-emerald-400"></i>
+          </div>
+          <div class="text-3xl sm:text-4xl font-extrabold font-mono text-emerald-400 mt-2 flex items-baseline gap-1">
+            100% <span class="text-lg font-normal text-slate-400">Offline</span>
+          </div>
+          <div class="text-xs font-mono text-slate-400 mt-1">Cero dependencia de nube</div>
+          <p class="text-xs text-slate-400 mt-3 leading-relaxed">
+            Toda la inferencia D-FINE RT-DETR, base de datos SQLite WAL y cálculo de enjambre operan a bordo del hardware embebido.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+          <i data-lucide="check" class="w-3.5 h-3.5"></i>
+          Seguridad criptográfica SHA-256
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- 4. SIMULADOR INTERACTIVO 3D EN THREE.JS (RADAR DE ENJAMBRE CON BARRIDO 3D) -->
+  <section id="radar-3d-section" class="py-20 px-4 sm:px-6 max-w-7xl mx-auto z-10 relative">
+    
+    <div class="border border-cyan-500/30 bg-slate-950/90 rounded-2xl overflow-hidden shadow-2xl backdrop-blur-xl">
+      
+      <!-- Barra Superior de Control del Radar 3D -->
+      <div class="px-6 py-4 bg-slate-900/90 border-b border-cyan-900/40 flex flex-wrap items-center justify-between gap-4">
+        
+        <div class="flex items-center gap-3">
+          <div class="w-3.5 h-3.5 rounded-full bg-cyan-400 animate-ping"></div>
+          <div>
+            <h2 class="text-base font-bold font-mono text-white flex items-center gap-2">
+              SIMULADOR TÁCTICO 3D &bull; THREE.JS AIRSPACE CORE
+              <span class="text-[10px] font-normal px-2.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">BARRIDO ESPACIAL 3D</span>
+            </h2>
+            <p class="text-xs text-slate-400 font-mono">Burbujas tácticas de 15m &bull; Relieve de escombros &bull; Detección D-FINE</p>
+          </div>
+        </div>
+
+        <!-- Botones de Acción Interactiva del Simulador -->
+        <div class="flex flex-wrap items-center gap-2.5 text-xs font-mono">
+          <div class="inline-flex rounded-lg border border-slate-800 p-0.5 bg-slate-950">
+            <button onclick="set3DRadarRange(100)" class="px-3 py-1.5 rounded bg-cyan-400 text-slate-950 font-bold transition-all">100m</button>
+            <button onclick="set3DRadarRange(200)" class="px-3 py-1.5 rounded text-slate-400 hover:text-white transition-all">200m</button>
+            <button onclick="set3DRadarRange(300)" class="px-3 py-1.5 rounded text-slate-400 hover:text-white transition-all">300m</button>
+          </div>
+          <button onclick="trigger3DObstacle()" class="px-3.5 py-1.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-all flex items-center gap-1.5">
+            <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+            <span>Inyectar Obstáculo 3D</span>
+          </button>
+          <button onclick="trigger3DHandover()" class="px-3.5 py-1.5 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 transition-all flex items-center gap-1.5">
+            <i data-lucide="battery-warning" class="w-3.5 h-3.5"></i>
+            <span>Test Handover (&lt;22%)</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Contenedor 3D Interactivo de Three.js -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-0 relative">
+        
+        <!-- Viewport WebGL Three.js (8 Cols) -->
+        <div id="three-radar-container" class="lg:col-span-8 relative h-[520px] sm:h-[600px] bg-slate-950 flex items-center justify-center cursor-grab active:cursor-grabbing overflow-hidden">
+          
+          <!-- Canvas WebGL Three.js -->
+          <canvas id="three-radar-canvas" class="w-full h-full block"></canvas>
+
+          <!-- Overlay HUD del Simulador 3D -->
+          <div class="absolute top-4 left-6 pointer-events-none text-xs font-mono text-cyan-400/90 space-y-1 bg-slate-950/80 p-3 rounded-lg border border-slate-800 backdrop-blur-sm">
+            <div>BARRIDO 3D: <span class="text-cyan-300 font-bold">360° VOLUMÉTRICO</span></div>
+            <div>BURBUJA SEGURIDAD: <span class="text-emerald-400 font-bold">15.0 M (RADIO ESFÉRICO)</span></div>
+            <div>RANGO DE DETECCIÓN: <span id="three-range-indicator" class="text-white font-bold">100m</span></div>
+            <div>COLISIONES EVITADAS (CPA): <span id="metric-cpa-count" class="text-amber-400 font-bold">0</span></div>
+          </div>
+
+          <div class="absolute bottom-4 left-6 pointer-events-none text-[11px] font-mono text-slate-400 bg-slate-950/80 px-3 py-1.5 rounded border border-slate-800">
+            <i data-lucide="move" class="w-3 h-3 inline-block mr-1 text-cyan-400"></i>
+            Arrastra para rotar la cámara 3D en 360° &bull; Rueda para Zoom
+          </div>
+
+          <!-- Banner Alerta Handover en 3D -->
+          <div id="handover-banner-hud" class="absolute top-4 right-6 pointer-events-none hidden bg-rose-950/90 border border-rose-500 text-rose-200 text-xs font-mono p-3 rounded-lg max-w-xs animate-pulse">
+            <strong>ALERTA HANDOVER &lt;22%:</strong> ARES-03 Charlie descargado. Relevo autónomo instantáneo con ARES-04 Delta.
+          </div>
+        </div>
+
+        <!-- Panel Lateral de Telemetría Táctica (4 Cols) -->
+        <div class="lg:col-span-4 p-6 bg-slate-900/95 border-t lg:border-t-0 lg:border-l border-slate-800 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+              <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-2">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+                Nodos ARES en Vuelo (4 UAVs)
+              </h3>
+              <span class="text-[10px] font-mono text-emerald-400 px-2 py-0.5 rounded bg-emerald-950/80 border border-emerald-800">
+                RED SINCRONIZADA
+              </span>
+            </div>
+
+            <!-- Fichas de Estado de Drones -->
+            <div class="mt-4 space-y-3 font-mono text-xs">
+              
+              <div class="p-3 rounded-lg bg-slate-950/80 border border-cyan-500/40">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+                    <strong class="text-white">ARES-01 (Alpha)</strong>
+                  </div>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">PATRULLA</span>
+                </div>
+                <div class="mt-2 grid grid-cols-3 gap-2 text-slate-400 text-[11px]">
+                  <div>ALT: <span class="text-slate-200">28m</span></div>
+                  <div>VEL: <span class="text-slate-200">6.2m/s</span></div>
+                  <div>BAT: <span class="text-emerald-400 font-bold">88%</span></div>
+                </div>
+                <div class="mt-1 text-[10px] text-slate-500">CPA Seguro: 24.2m &gt; 15m</div>
+              </div>
+
+              <div class="p-3 rounded-lg bg-slate-950/80 border border-slate-800">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                    <strong class="text-white">ARES-02 (Bravo Térmico)</strong>
+                  </div>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">ESCÁNER</span>
+                </div>
+                <div class="mt-2 grid grid-cols-3 gap-2 text-slate-400 text-[11px]">
+                  <div>ALT: <span class="text-slate-200">34m</span></div>
+                  <div>VEL: <span class="text-slate-200">5.8m/s</span></div>
+                  <div>BAT: <span class="text-emerald-400 font-bold">76%</span></div>
+                </div>
+                <div class="mt-1 text-[10px] text-slate-500">Payload: D-FINE RT-DETR</div>
+              </div>
+
+              <div class="p-3 rounded-lg bg-slate-950/80 border border-slate-800">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+                    <strong class="text-white">ARES-03 (Charlie Recon)</strong>
+                  </div>
+                  <span id="ares-03-tag" class="text-[10px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800">BÚSQUEDA</span>
+                </div>
+                <div class="mt-2 grid grid-cols-3 gap-2 text-slate-400 text-[11px]">
+                  <div>ALT: <span class="text-slate-200">22m</span></div>
+                  <div>VEL: <span class="text-slate-200">4.9m/s</span></div>
+                  <div>BAT: <span id="ares-03-bat-tag" class="text-emerald-400 font-bold">64%</span></div>
+                </div>
+                <div class="mt-1 text-[10px] text-slate-500">Handover Automático @ &lt; 22%</div>
+              </div>
+
+              <div class="p-3 rounded-lg bg-slate-950/80 border border-slate-800">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-slate-500" id="ares-04-dot"></span>
+                    <strong class="text-white">ARES-04 (Delta Standby)</strong>
+                  </div>
+                  <span id="ares-04-tag" class="text-[10px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">EN ESPERA</span>
+                </div>
+                <div class="mt-2 grid grid-cols-3 gap-2 text-slate-400 text-[11px]">
+                  <div>ALT: <span class="text-slate-200">0m</span></div>
+                  <div>VEL: <span class="text-slate-200">0m/s</span></div>
+                  <div>BAT: <span class="text-emerald-400 font-bold">100%</span></div>
+                </div>
+                <div class="mt-1 text-[10px] text-slate-500">Unidad de relevo en recarga</div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Botones de Exportación Táctica -->
+          <div class="mt-6 pt-4 border-t border-slate-800 space-y-2">
+            <button onclick="downloadAARDossier()" class="w-full py-2.5 px-3 rounded-lg bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30 border border-cyan-500/40 text-xs font-mono font-semibold flex items-center justify-center gap-2 transition-all">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+              <span>Descargar Dossier AAR (SHA-256)</span>
+            </button>
+            <button onclick="downloadWaypointsFile()" class="w-full py-2.5 px-3 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 border border-emerald-500/40 text-xs font-mono font-semibold flex items-center justify-center gap-2 transition-all">
+              <i data-lucide="download" class="w-4 h-4"></i>
+              <span>Exportar Waypoints QGC (.waypoints)</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. VENTA, PLANTEAMIENTO DEL PROYECTO & TECNOLOGÍA USADA -->
+  <section id="proceso-section" class="py-20 px-4 sm:px-6 max-w-7xl mx-auto z-10 relative">
+    
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-800 rounded-full">
+        <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+        EL PLANTEAMIENTO DEL PROYECTO
+      </div>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+        ¿Por qué existe BioScout?
+      </h2>
+      <p class="mt-4 text-slate-300 text-base sm:text-lg leading-relaxed">
+        En terremotos severos, el colapso no termina con el sismo: las vías quedan cortadas, la fibra óptica se rompe y las personas bajo los escombros mueren por falta de localización inmediata.
+      </p>
+    </div>
+
+    <!-- El Trilema Crítico Resuelto -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <div class="tactical-card p-6 border-t-4 border-t-cyan-400 flex flex-col justify-between">
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-cyan-950 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-4">
+            <i data-lucide="wifi-off" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white font-mono">1. Cero Nube, Cero Internet</h3>
+          <p class="mt-3 text-sm text-slate-300 leading-relaxed">
+            Las soluciones comerciales fallan porque transmiten video a la nube para procesar IA. Si se caen las torres 4G/5G, el dron queda ciego. BioScout procesa toda la visión en computadoras de abordo en el Edge.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-xs font-mono text-cyan-400">
+          Arquitectura 100% Desconectada
+        </div>
+      </div>
+
+      <div class="tactical-card p-6 border-t-4 border-t-emerald-400 flex flex-col justify-between">
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-emerald-950 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mb-4">
+            <i data-lucide="eye" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white font-mono">2. D-FINE RT-DETR + Filtro FDR</h3>
+          <p class="mt-3 text-sm text-slate-300 leading-relaxed">
+            En el humo y polvo de un derrumbe, detectores clásicos confunden maniquíes o sombras con personas vivas. D-FINE calibra la tasa de falso descubrimiento (FDR) suprimiendo falsos positivos al 99.4%.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-xs font-mono text-emerald-400">
+          Inferencia neuronal en 14.2 ms
+        </div>
+      </div>
+
+      <div class="tactical-card p-6 border-t-4 border-t-amber-400 flex flex-col justify-between">
+        <div>
+          <div class="w-12 h-12 rounded-xl bg-amber-950 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4">
+            <i data-lucide="battery-charging" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white font-mono">3. Cobertura Sin Pausas (22% Bat)</h3>
+          <p class="mt-3 text-sm text-slate-300 leading-relaxed">
+            La autonomía de un dron ronda los 25 minutos. Para no dejar sectores sin búsqueda, el protocolo de Handover activa el relevo automático al 22% de batería, sustituyendo la unidad sin detener la cuadrícula.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-xs font-mono text-amber-400">
+          Rotación perpetua 24/7
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- 6. ¿QUIÉNES LO USAN? CASOS DE ADOPCIÓN TÁCTICA -->
+  <section id="adopcion-section" class="py-20 px-4 sm:px-6 max-w-7xl mx-auto z-10 relative">
+    
+    <div class="text-center max-w-3xl mx-auto mb-14">
+      <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-mono text-emerald-400 bg-emerald-950/60 border border-emerald-800 rounded-full">
+        <i data-lucide="target" class="w-3.5 h-3.5"></i>
+        ADOPCIÓN INSTITUCIONAL
+      </div>
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+        ¿Quiénes usan BioScout?
+      </h2>
+      <p class="mt-3 text-slate-300 text-base">
+        Diseñado para brigadas operativas donde la velocidad de localización define el número de vidas salvadas.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      
+      <div class="tactical-card p-6">
+        <div class="w-10 h-10 rounded-lg bg-cyan-950 border border-cyan-500/40 flex items-center justify-center text-cyan-400 mb-4">
+          <i data-lucide="shield" class="w-5 h-5"></i>
+        </div>
+        <h3 class="text-base font-bold text-white font-mono">Brigadas USAR (INSARAG)</h3>
+        <p class="mt-2 text-xs text-slate-400 leading-relaxed">
+          Grupos especializados de Búsqueda y Rescate Urbano. Utilizan BioScout para levantar el mapa de colapso en los primeros 10 minutos y detectar víctimas antes de enviar rescatistas a estructuras inestables.
         </p>
       </div>
 
-      <div class="soft-card p-6 border-l-4 border-l-orange-500">
-        <div class="flex items-center justify-between text-xs font-mono text-orange-400 mb-2">
-          <span>COLOMBIA</span>
-          <i data-lucide="map-pin-off" class="w-4 h-4"></i>
+      <div class="tactical-card p-6">
+        <div class="w-10 h-10 rounded-lg bg-amber-950 border border-amber-500/40 flex items-center justify-center text-amber-400 mb-4">
+          <i data-lucide="flame" class="w-5 h-5"></i>
         </div>
-        <div class="text-3xl font-display font-extrabold text-white">+480.000 Damnificados</div>
-        <p class="text-xs text-earth-dust/80 mt-2 leading-relaxed">
-          Familias en 16 departamentos sin un enlace unificado de alerta ni coordinación táctica aérea.
+        <h3 class="text-base font-bold text-white font-mono">Cuerpos de Bomberos & Defensa Civil</h3>
+        <p class="mt-2 text-xs text-slate-400 leading-relaxed">
+          Respuesta inmediata ante terremotos, derrumbes y deslizamientos de tierra donde las vías de acceso están bloqueadas y los canales de alerta comunitaria colapsaron.
         </p>
       </div>
 
-      <div class="soft-card p-6 border-l-4 border-l-cyan-500">
-        <div class="flex items-center justify-between text-xs font-mono text-cyan-400 mb-2">
-          <span>PERÚ</span>
-          <i data-lucide="radio" class="w-4 h-4"></i>
+      <div class="tactical-card p-6">
+        <div class="w-10 h-10 rounded-lg bg-emerald-950 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-4">
+          <i data-lucide="heart-pulse" class="w-5 h-5"></i>
         </div>
-        <div class="text-3xl font-display font-extrabold text-white">525 Distritos</div>
-        <p class="text-xs text-earth-dust/80 mt-2 leading-relaxed">
-          En emergencia crítica con saturación total y colapso de los canales locales de alerta temprana.
+        <h3 class="text-base font-bold text-white font-mono">Unidades Médicas de Triage Rápido</h3>
+        <p class="mt-2 text-xs text-slate-400 leading-relaxed">
+          Priorización de suministros críticos, transporte de botiquines de primera intervención y delimitación de rutas seguras para evacuación de heridos.
         </p>
       </div>
 
@@ -183,534 +567,203 @@
 
   </section>
 
-  <!-- SECCIÓN CENTRAL: EL VIDEO NATIVO FORMANDO PARTE DE LA CASCADA -->
-  <section id="video-seccion" class="py-24 px-4 sm:px-6 max-w-6xl mx-auto z-10 relative">
+  <!-- 7. SECCIÓN DE INTEGRANTES & EMBLEMA ANIMADO INNOVADOR SENATI -->
+  <section id="equipo-section" class="py-24 px-4 sm:px-6 max-w-7xl mx-auto z-10 relative">
     
-    <div class="text-center max-w-3xl mx-auto mb-12">
-      <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-medium text-cyan-300 bg-cyan-950/60 border border-cyan-800 rounded-full">
-        <i data-lucide="clapperboard" class="w-3.5 h-3.5"></i>
-        REGISTRO EN VIVO DE LA MISIÓN
+    <div class="text-center max-w-3xl mx-auto mb-16">
+      <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-mono text-cyan-400 bg-cyan-950/60 border border-cyan-800 rounded-full">
+        <i data-lucide="users" class="w-3.5 h-3.5"></i>
+        EQUIPO CREADOR & INNOVACIÓN TÉCNICA
       </div>
-      <h2 class="text-3xl sm:text-5xl font-display font-extrabold text-white tracking-tight">
-        El Video de BioScout en la Cascada
+      <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
+        Quiénes desarrollaron BioScout
       </h2>
-      <p class="mt-3 text-earth-dust text-sm sm:text-base leading-relaxed">
-        Observa el vuelo del enjambre y el escaneo de escombros en tiempo real. El reproductor forma parte del flujo continuo de la página para que explores la operación directamente mientras desciendes.
+      <p class="mt-3 text-slate-300 text-base">
+        Investigadores y desarrolladores formados con rigor técnico e institucional en robótica, inteligencia artificial y edge computing.
       </p>
     </div>
 
-    <!-- Contenedor del Video en Cascada -->
-    <div class="soft-card p-3 sm:p-5 rounded-3xl border border-amber-500/30 video-cascade-glow overflow-hidden relative">
+    <!-- Integrantes Oficiales -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       
-      <!-- Barra Superior de Control de la Pantalla de Campo -->
-      <div class="px-4 py-3 bg-earth-950/90 rounded-2xl mb-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div class="flex items-center gap-2 text-cyan-400 font-medium">
-          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
-          <span>TRANSMISIÓN OPERATIVA: ARCHIVO DE CAMPO (SIN SUB.MP4)</span>
+      <!-- Valentín García Dueñas -->
+      <div class="tactical-card p-6 border-t-4 border-t-cyan-400 flex flex-col justify-between">
+        <div>
+          <div class="w-14 h-14 rounded-xl bg-slate-900 border border-cyan-500/40 flex items-center justify-center text-cyan-400 mb-4">
+            <i data-lucide="bot" class="w-7 h-7"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white font-mono">Valentín García Dueñas</h3>
+          <span class="text-xs font-mono text-cyan-400">BioScout Core & Coordinación de Enjambre</span>
+          <p class="mt-3 text-xs text-slate-400 leading-relaxed">
+            Arquitectura de misión, coordinación de vuelo y algoritmos de localización rápida en zonas de desastre.
+          </p>
         </div>
-        <div class="flex items-center gap-3 text-earth-dust/80">
-          <button onclick="toggleVideoPlayback()" id="video-play-btn" class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-earth-800 text-white hover:bg-cyan-500 hover:text-black transition-colors font-medium">
-            <i data-lucide="pause" class="w-3.5 h-3.5" id="video-play-icon"></i>
-            <span id="video-play-text">Pausar</span>
-          </button>
-          <button onclick="toggleMuteVideo()" id="video-mute-btn" class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-earth-800 text-white hover:bg-amber-500 hover:text-black transition-colors font-medium">
-            <i data-lucide="volume-2" class="w-3.5 h-3.5" id="video-mute-icon"></i>
-            <span id="video-mute-text">Sonido</span>
-          </button>
-          <button onclick="fullscreenVideo()" class="p-1.5 rounded-xl bg-earth-800 text-white hover:text-cyan-400 transition-colors">
-            <i data-lucide="maximize" class="w-3.5 h-3.5"></i>
-          </button>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] font-mono text-slate-500">
+          Cinemática 3D &bull; MAVLink / QGC
         </div>
       </div>
 
-      <!-- Reproductor de Video HTML5 Embebido Directamente -->
-      <div class="relative aspect-video rounded-2xl overflow-hidden bg-black flex items-center justify-center group shadow-inner">
-        <video id="cascade-main-video" autoplay muted loop playsinline controls class="w-full h-full object-cover sm:object-contain">
+      <!-- Jhoao López -->
+      <div class="tactical-card p-6 border-t-4 border-t-emerald-400 flex flex-col justify-between">
+        <div>
+          <div class="w-14 h-14 rounded-xl bg-slate-900 border border-emerald-500/40 flex items-center justify-center text-emerald-400 mb-4">
+            <i data-lucide="brain-circuit" class="w-7 h-7"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white font-mono">Jhoao López</h3>
+          <span class="text-xs font-mono text-emerald-400">Inteligencia Artificial & D-FINE RT-DETR</span>
+          <p class="mt-3 text-xs text-slate-400 leading-relaxed">
+            Entrenamiento de modelos de visión, calibración estadística FDR contra falsos positivos e inferencia en tiempo real.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] font-mono text-slate-500">
+          PyTorch &bull; ONNX &bull; TensorRT
+        </div>
+      </div>
+
+      <!-- Aron Ayala -->
+      <div class="tactical-card p-6 border-t-4 border-t-cyan-400 flex flex-col justify-between">
+        <div>
+          <div class="w-14 h-14 rounded-xl bg-slate-900 border border-cyan-500/40 flex items-center justify-center text-cyan-400 mb-4">
+            <i data-lucide="cpu" class="w-7 h-7"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white font-mono">Aron Ayala</h3>
+          <span class="text-xs font-mono text-cyan-400">Sistemas Embebidos & Edge Core Offline</span>
+          <p class="mt-3 text-xs text-slate-400 leading-relaxed">
+            Persistencia local en SQLite WAL, gestión del relevo energético al 22% y telemetría por radioenlace LoRa de largo alcance.
+          </p>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800 text-[11px] font-mono text-slate-500">
+          Linux Embedded &bull; LoRa Mesh
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Ficha del Tutor -->
+    <div class="mt-8 tactical-card p-6 max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6 border border-slate-800">
+      <div class="flex items-center gap-4">
+        <div class="w-12 h-12 rounded-xl bg-slate-900 border border-amber-500/40 flex items-center justify-center text-amber-400">
+          <i data-lucide="award" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <span class="text-xs font-mono text-amber-400 font-bold uppercase">Dirección y Asesoría Técnica</span>
+          <h3 class="text-lg font-bold text-white font-mono">Charlen Calero H.</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Tutor de Proyecto & Validación Metodológica</p>
+        </div>
+      </div>
+      <div class="text-xs font-mono text-emerald-400 bg-emerald-950/60 px-3 py-1.5 rounded border border-emerald-800">
+        Tutor Certificado
+      </div>
+    </div>
+
+    <!-- ============================================================
+         LOGO CON ANIMACIÓN INNOVADORA DE SENATI
+         ============================================================ -->
+    <div class="mt-14 max-w-4xl mx-auto senati-hologram-card p-8 rounded-2xl shadow-[0_0_50px_rgba(0,180,216,0.2)]">
+      
+      <!-- Línea de escaneo láser sobre el logo -->
+      <div class="senati-scanline"></div>
+
+      <div class="flex flex-col md:flex-row items-center justify-between gap-8 relative z-10">
+        
+        <!-- Emblema Gráfico SVG Animado de SENATI -->
+        <div class="relative w-36 h-36 flex items-center justify-center flex-shrink-0">
+          
+          <!-- Engranaje Industrial Exterior Giratorio SENATI -->
+          <svg class="absolute inset-0 w-full h-full senati-gear-ring" viewBox="0 0 100 100">
+            <!-- 12 Dientes de Engranaje Técnico Industrial -->
+            <path d="M46 5 L54 5 L55 12 L63 15 L69 10 L75 14 L73 22 L79 27 L87 25 L89 33 L83 39 L86 47 L94 49 L94 57 L86 59 L83 67 L89 73 L87 81 L79 79 L73 84 L75 92 L69 96 L63 91 L55 94 L54 101 L46 101 L45 94 L37 91 L31 96 L25 92 L27 84 L21 79 L13 81 L11 73 L17 67 L14 59 L6 57 L6 49 L14 47 L17 39 L11 33 L13 25 L21 27 L27 22 L25 14 L31 10 L37 15 L45 12 Z" 
+                  fill="none" stroke="#00b4d8" stroke-width="1.8" stroke-opacity="0.8" />
+          </svg>
+
+          <!-- Anillo de Coordenadas Tácticas HUD Concéntrico -->
+          <svg class="absolute w-28 h-28 senati-hud-ring" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="44" fill="none" stroke="#0077b6" stroke-width="1.5" stroke-dasharray="4, 6" />
+            <circle cx="50" cy="50" r="38" fill="none" stroke="#00f2fe" stroke-width="1" stroke-opacity="0.5" />
+          </svg>
+
+          <!-- Núcleo Central de SENATI con Logo Tipográfico 3D -->
+          <div class="relative z-10 w-20 h-20 rounded-full bg-slate-950 border-2 border-cyan-400 flex flex-col items-center justify-center senati-core-pulse shadow-[0_0_25px_rgba(0,180,216,0.6)]">
+            <span class="font-extrabold font-mono tracking-widest text-lg text-white">SENATI</span>
+            <span class="text-[7px] font-mono tracking-widest text-cyan-400 uppercase">TECNOLOGÍA</span>
+          </div>
+
+        </div>
+
+        <!-- Descripción Institucional y Reconocimiento -->
+        <div class="text-center md:text-left">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-blue-950/80 text-cyan-300 border border-blue-500/50 text-xs font-mono mb-2">
+            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+            PROYECTO DE INNOVACIÓN TECNOLÓGICA &bull; SENATI
+          </div>
+          <h3 class="text-2xl font-bold font-mono text-white">Desarrollado bajo Estándares SENATI</h3>
+          <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed max-w-xl">
+            Este proyecto representa la capacidad técnica, rigurosidad metodológica y destreza en tecnologías de la información aplicadas a la solución de catástrofes nacionales e internacionales.
+          </p>
+          <div class="mt-4 flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs font-mono text-slate-400">
+            <span class="flex items-center gap-1.5"><i data-lucide="cpu" class="w-3.5 h-3.5 text-cyan-400"></i> Formación Técnica Profesional</span>
+            <span class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i> Innovación Aplicada</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- 8. MODAL INTERACTIVO PARA REPRODUCIR VIDEO DE PITCH -->
+  <div id="pitch-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex items-center justify-center p-4">
+    <div class="relative w-full max-w-4xl bg-slate-950 border border-cyan-500/60 rounded-xl overflow-hidden shadow-[0_0_60px_rgba(6,182,212,0.4)] hud-corner">
+      
+      <!-- Cabecera del Modal -->
+      <div class="px-5 py-3.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+        <div class="flex items-center gap-2 text-cyan-400 font-mono text-xs font-bold">
+          <i data-lucide="play" class="w-4 h-4 fill-cyan-400"></i>
+          <span>PITCH OPERATIVO &bull; BIOSCOUT ARES (SIN SUB.MP4)</span>
+        </div>
+        <button onclick="closePitchModal()" class="w-8 h-8 rounded hover:bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Reproductor HTML5 -->
+      <div class="relative aspect-video bg-black flex items-center justify-center">
+        <video id="pitch-modal-video" controls playsinline class="w-full h-full object-contain">
           <source src="assets/video/Sin%20sub.mp4" type="video/mp4">
           <source src="assets/video/Sin sub.mp4" type="video/mp4">
           <source src="Sin%20sub.mp4" type="video/mp4">
           <source src="Sin sub.mp4" type="video/mp4">
           Tu navegador no soporta reproducción de video HTML5.
         </video>
-
-        <!-- Overlay Informativo de Rescate sobre el Video -->
-        <div class="absolute bottom-4 left-4 pointer-events-none bg-earth-950/80 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-amber-500/30 text-[11px] font-mono text-earth-dust hidden sm:flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-          <span>COORD: S12°02'35" W77°01'42" // RECONOCIMIENTO ACTIVO</span>
-        </div>
       </div>
 
-      <!-- Pie Explicativo del Video -->
-      <div class="mt-4 px-4 py-2 flex flex-col sm:flex-row items-center justify-between text-xs text-earth-dust/70 gap-2">
-        <span>Pruebas de percepción neuronal D-FINE y cinemática de vuelo sobre escombros reales.</span>
-        <span class="text-amber-400 font-medium">Procesamiento local 100% desconectado</span>
+      <!-- Pie del Modal -->
+      <div class="px-5 py-3 bg-slate-900 border-t border-slate-800 flex flex-wrap items-center justify-between text-xs font-mono text-slate-400">
+        <div>Video demostrativo de pitch y pruebas de campo de enjambre</div>
+        <button onclick="closePitchModal()" class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 transition-colors">
+          Cerrar [ESC]
+        </button>
       </div>
 
     </div>
+  </div>
 
-  </section>
-
-  <!-- SECCIÓN: QUÉ OCURRE DESPUÉS DEL TERREMOTO & EL PROBLEMA -->
-  <section class="py-20 px-4 sm:px-6 max-w-6xl mx-auto z-10 relative">
-    
-    <div class="soft-card p-8 sm:p-12 rounded-3xl border border-amber-600/20">
-      
-      <div class="max-w-3xl">
-        <span class="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">Diagnóstico Crítico</span>
-        <h2 class="text-3xl sm:text-4xl font-display font-extrabold text-white mt-1">
-          El problema no es solo el terremoto. Es lo que ocurre después.
-        </h2>
-        <p class="mt-3 text-earth-dust text-base leading-relaxed">
-          Cuando la tierra deja de temblar, se desata una cadena de colapsos que aísla por completo a las víctimas y ciega a los centros de socorro:
-        </p>
+  <!-- FOOTER MILITAR TÁCTICO -->
+  <footer class="border-t border-slate-800/80 bg-slate-950 py-10 px-6 text-center text-xs font-mono text-slate-500 relative z-10">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2 text-slate-400">
+        <i data-lucide="shield" class="w-4 h-4 text-cyan-400"></i>
+        <span>BIOSCOUT &bull; MÓDULO ARES &bull; SISTEMA AUTÓNOMO DE BÚSQUEDA Y RESCATE</span>
       </div>
-
-      <!-- Secuencia de Colapso -->
-      <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        
-        <div class="p-4 rounded-2xl bg-earth-950/70 border border-earth-800 text-center">
-          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center mb-3">
-            <i data-lucide="zap" class="w-5 h-5"></i>
-          </div>
-          <h3 class="font-bold text-white text-sm">1. Terremoto</h3>
-          <p class="text-[11px] text-earth-dust/70 mt-1">Impacto violento de ondas sísmicas</p>
-        </div>
-
-        <div class="p-4 rounded-2xl bg-earth-950/70 border border-earth-800 text-center">
-          <div class="w-10 h-10 rounded-xl bg-orange-500/20 text-orange-400 mx-auto flex items-center justify-center mb-3">
-            <i data-lucide="building-2" class="w-5 h-5"></i>
-          </div>
-          <h3 class="font-bold text-white text-sm">2. Vías Dañadas</h3>
-          <p class="text-[11px] text-earth-dust/70 mt-1">Puentes caídos y derrumbes</p>
-        </div>
-
-        <div class="p-4 rounded-2xl bg-earth-950/70 border border-earth-800 text-center">
-          <div class="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 mx-auto flex items-center justify-center mb-3">
-            <i data-lucide="wifi-off" class="w-5 h-5"></i>
-          </div>
-          <h3 class="font-bold text-white text-sm">3. Sin Red Celular</h3>
-          <p class="text-[11px] text-earth-dust/70 mt-1">Antenas y fibra cortadas</p>
-        </div>
-
-        <div class="p-4 rounded-2xl bg-earth-950/70 border border-earth-800 text-center">
-          <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center mb-3">
-            <i data-lucide="user-x" class="w-5 h-5"></i>
-          </div>
-          <h3 class="font-bold text-white text-sm">4. Personas Aisladas</h3>
-          <p class="text-[11px] text-earth-dust/70 mt-1">Atrapadas sin poder pedir auxilio</p>
-        </div>
-
-        <div class="p-4 rounded-2xl bg-earth-950/70 border border-earth-800 text-center">
-          <div class="w-10 h-10 rounded-xl bg-red-500/20 text-red-400 mx-auto flex items-center justify-center mb-3">
-            <i data-lucide="clock" class="w-5 h-5"></i>
-          </div>
-          <h3 class="font-bold text-white text-sm">5. Respuesta Lenta</h3>
-          <p class="text-[11px] text-earth-dust/70 mt-1">La ayuda llega demasiado tarde</p>
-        </div>
-
-      </div>
-
-      <!-- El Objetivo BioScout -->
-      <div class="mt-10 p-6 rounded-2xl bg-gradient-to-r from-earth-950 via-earth-900 to-earth-950 border border-cyan-500/30 flex flex-col sm:flex-row items-center justify-between gap-6">
-        <div>
-          <span class="text-xs font-mono text-cyan-400 uppercase font-bold">Objetivo Central de BioScout</span>
-          <p class="text-white text-base font-semibold mt-1">
-            Reducir el tiempo entre que ocurre la emergencia y el momento en que podemos detectarla, localizarla y responder.
-          </p>
-        </div>
-        <div class="flex items-center gap-2 text-xs font-medium text-cyan-300 bg-cyan-950/80 px-4 py-2 rounded-xl border border-cyan-700/50 whitespace-nowrap">
-          <i data-lucide="check-circle-2" class="w-4 h-4 text-cyan-400"></i>
-          Detectar &bull; Localizar &bull; Responder
-        </div>
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- SECCIÓN 3: EL FLUJO OPERATIVO BIOSCOUT -->
-  <section id="proceso" class="py-20 px-4 sm:px-6 max-w-6xl mx-auto z-10 relative">
-    
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-medium text-amber-400 bg-earth-900 border border-amber-800 rounded-full">
-        <i data-lucide="layers" class="w-3.5 h-3.5"></i>
-        ARQUITECTURA DE MISIÓN
-      </div>
-      <h2 class="text-3xl sm:text-5xl font-display font-extrabold text-white tracking-tight">
-        Así funciona BioScout
-      </h2>
-      <p class="mt-3 text-earth-dust text-sm sm:text-base">
-        El flujo operativo de 5 etapas que transforma un caos desorganizado en un mapa táctico de rescate en minutos.
-      </p>
-    </div>
-
-    <!-- Las 5 Etapas del Flujo -->
-    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-      
-      <div class="soft-card p-5 rounded-2xl flex flex-col justify-between">
-        <div>
-          <span class="text-xs font-mono text-amber-400 font-bold">01 &bull; DETECCIÓN</span>
-          <h3 class="text-lg font-bold text-white mt-1">Ocurre una Emergencia</h3>
-          <p class="text-xs text-earth-dust/80 mt-2 leading-relaxed">
-            Se activa el protocolo inmediatamente tras el sismo o colapso estructural.
-          </p>
-        </div>
-        <div class="mt-4 pt-3 border-t border-earth-800 text-[10px] text-earth-dust/60 font-mono">Disparo de alarma</div>
-      </div>
-
-      <div class="soft-card p-5 rounded-2xl flex flex-col justify-between">
-        <div>
-          <span class="text-xs font-mono text-orange-400 font-bold">02 &bull; DESPLIEGUE</span>
-          <h3 class="text-lg font-bold text-white mt-1">BioScout Activa Misión</h3>
-          <p class="text-xs text-earth-dust/80 mt-2 leading-relaxed">
-            El enjambre de UAVs despega automáticamente hacia la zona de impacto en cuadrícula.
-          </p>
-        </div>
-        <div class="mt-4 pt-3 border-t border-earth-800 text-[10px] text-earth-dust/60 font-mono">Despegue autónomo</div>
-      </div>
-
-      <div class="soft-card p-5 rounded-2xl flex flex-col justify-between">
-        <div>
-          <span class="text-xs font-mono text-cyan-400 font-bold">03 &bull; PERCEPCIÓN</span>
-          <h3 class="text-lg font-bold text-white mt-1">Análisis de Entorno</h3>
-          <p class="text-xs text-earth-dust/80 mt-2 leading-relaxed">
-            Red neuronal D-FINE (RT-DETR) procesa imágenes térmicas y ópticas en el borde.
-          </p>
-        </div>
-        <div class="mt-4 pt-3 border-t border-earth-800 text-[10px] text-earth-dust/60 font-mono">Filtros FDR anti-humo</div>
-      </div>
-
-      <div class="soft-card p-5 rounded-2xl flex flex-col justify-between">
-        <div>
-          <span class="text-xs font-mono text-teal-400 font-bold">04 &bull; LOCALIZACIÓN</span>
-          <h3 class="text-lg font-bold text-white mt-1">Identifica Víctimas</h3>
-          <p class="text-xs text-earth-dust/80 mt-2 leading-relaxed">
-            Marca coordenadas GPS precisas de personas atrapadas y accesos viables entre escombros.
-          </p>
-        </div>
-        <div class="mt-4 pt-3 border-t border-earth-800 text-[10px] text-earth-dust/60 font-mono">Georreferenciación</div>
-      </div>
-
-      <div class="soft-card p-5 rounded-2xl flex flex-col justify-between">
-        <div>
-          <span class="text-xs font-mono text-emerald-400 font-bold">05 &bull; COORDINACIÓN</span>
-          <h3 class="text-lg font-bold text-white mt-1">Envío Táctico</h3>
-          <p class="text-xs text-earth-dust/80 mt-2 leading-relaxed">
-            Transmite la información al centro de comando por radiofrecuencia LoRa sin depender de internet.
-          </p>
-        </div>
-        <div class="mt-4 pt-3 border-t border-earth-800 text-[10px] text-earth-dust/60 font-mono">Dossier y MAVLink</div>
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- SECCIÓN 4: SIMULADOR DE RADAR TÁCTICO & ESPACIO AÉREO -->
-  <section id="simulador" class="py-20 px-4 sm:px-6 max-w-7xl mx-auto z-10 relative">
-    
-    <div class="text-center max-w-3xl mx-auto mb-12">
-      <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-medium text-cyan-400 bg-cyan-950/60 border border-cyan-800 rounded-full">
-        <i data-lucide="crosshair" class="w-3.5 h-3.5"></i>
-        SIMULADOR INTERACTIVO
-      </div>
-      <h2 class="text-3xl sm:text-5xl font-display font-extrabold text-white tracking-tight">
-        Radar de Espacio Aéreo & Enjambre ARES
-      </h2>
-      <p class="mt-3 text-earth-dust text-sm sm:text-base">
-        Experimenta la cinemática de evasión 3D con burbujas de 15 metros, o prueba la transferencia automática de energía si un dron cae por debajo del 22%.
-      </p>
-    </div>
-
-    <!-- Módulo de Radar Canvas -->
-    <div class="soft-card rounded-3xl overflow-hidden border border-cyan-500/30">
-      
-      <!-- Controles Superiores -->
-      <div class="px-6 py-4 bg-earth-950/90 border-b border-earth-800 flex flex-wrap items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <div class="w-3 h-3 rounded-full bg-cyan-400 animate-ping"></div>
-          <div>
-            <h3 class="text-sm font-bold text-white flex items-center gap-2">
-              RADAR DE ENJAMBRE &bull; ARES AIRSPACE
-              <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-300 border border-cyan-800 font-mono">15m BUBBLE</span>
-            </h3>
-          </div>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2 text-xs">
-          <div class="inline-flex rounded-xl border border-earth-800 p-0.5 bg-earth-900">
-            <button onclick="setRadarRange(100)" id="btn-range-100" class="px-3 py-1.5 rounded-lg bg-cyan-500 text-slate-950 font-bold transition-all">100m</button>
-            <button onclick="setRadarRange(200)" id="btn-range-200" class="px-3 py-1.5 rounded-lg text-earth-dust hover:text-white transition-all">200m</button>
-            <button onclick="setRadarRange(300)" id="btn-range-300" class="px-3 py-1.5 rounded-lg text-earth-dust hover:text-white transition-all">300m</button>
-          </div>
-          <button onclick="triggerObstacleInjection()" class="px-3.5 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-all flex items-center gap-1.5 font-medium">
-            <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
-            <span>Inyectar Obstáculo 3D</span>
-          </button>
-          <button onclick="triggerHandoverTest()" class="px-3.5 py-1.5 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 transition-all flex items-center gap-1.5 font-medium">
-            <i data-lucide="battery-warning" class="w-3.5 h-3.5"></i>
-            <span>Simular Handover (&lt;22%)</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Radar y Panel Lateral -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-0">
-        
-        <!-- Canvas de Radar -->
-        <div class="lg:col-span-8 p-6 bg-earth-950/95 flex flex-col items-center justify-center relative min-h-[460px]">
-          
-          <div class="absolute top-4 left-6 pointer-events-none text-xs font-mono text-cyan-400/80 space-y-1">
-            <div>BARRIDO: <span class="text-cyan-300 font-bold">360°/4s SÍNCRONO</span></div>
-            <div>DETECCIONES: <span class="text-emerald-400 font-bold">1 SUPERVIVIENTE (CONF: 98.4%)</span></div>
-            <div>COLISIONES EVITADAS: <span id="radar-cpa-evasion" class="text-white font-bold">0</span></div>
-          </div>
-
-          <div class="absolute top-4 right-6 pointer-events-none text-xs font-mono text-right text-earth-dust/70 space-y-1">
-            <div>RANGO: <span id="radar-range-display" class="text-cyan-400 font-bold">100 METROS</span></div>
-            <div>BURBUJA: <span class="text-emerald-400 font-bold">15.0 M PROTECCIÓN</span></div>
-          </div>
-
-          <canvas id="tactical-radar-canvas" width="540" height="540" class="max-w-full h-auto rounded-full border border-cyan-500/30 shadow-[0_0_35px_rgba(6,182,212,0.15)] cursor-crosshair"></canvas>
-
-          <div class="mt-4 flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-earth-dust/70">
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-cyan-400"></span> Dron Activo</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full border border-cyan-400/60"></span> Burbuja 15m</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-emerald-400"></span> Sobreviviente</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-amber-400"></span> Obstáculo 3D</span>
-            <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded-full bg-rose-400"></span> Handover &lt;22%</span>
-          </div>
-        </div>
-
-        <!-- Panel Lateral de Nodos -->
-        <div class="lg:col-span-4 p-6 bg-earth-900/90 border-t lg:border-t-0 lg:border-l border-earth-800 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center justify-between pb-3 border-b border-earth-800">
-              <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
-                <i data-lucide="layers" class="w-4 h-4"></i>
-                Enjambre en Operación (4 Drones)
-              </h4>
-              <span class="text-[10px] font-mono text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-950 border border-emerald-800">
-                EDGE 100% OFFLINE
-              </span>
-            </div>
-
-            <div class="mt-4 space-y-3">
-              <div class="p-3 rounded-2xl bg-earth-950/80 border border-cyan-500/30">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-bold text-white flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
-                    ARES-01 (Alpha)
-                  </span>
-                  <span class="text-[10px] px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono">PATRULLA</span>
-                </div>
-                <div class="mt-2 grid grid-cols-3 gap-2 text-[11px] font-mono text-earth-dust/70">
-                  <div>ALT: <span class="text-white">28m</span></div>
-                  <div>VEL: <span class="text-white">6m/s</span></div>
-                  <div>BAT: <span class="text-emerald-400 font-bold">88%</span></div>
-                </div>
-              </div>
-
-              <div class="p-3 rounded-2xl bg-earth-950/80 border border-earth-800">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-bold text-white flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
-                    ARES-02 (Bravo)
-                  </span>
-                  <span class="text-[10px] px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono">ESCÁNER</span>
-                </div>
-                <div class="mt-2 grid grid-cols-3 gap-2 text-[11px] font-mono text-earth-dust/70">
-                  <div>ALT: <span class="text-white">34m</span></div>
-                  <div>VEL: <span class="text-white">5m/s</span></div>
-                  <div>BAT: <span class="text-emerald-400 font-bold">76%</span></div>
-                </div>
-              </div>
-
-              <div class="p-3 rounded-2xl bg-earth-950/80 border border-earth-800">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-bold text-white flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
-                    ARES-03 (Charlie)
-                  </span>
-                  <span id="ares-03-status" class="text-[10px] px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 font-mono">BÚSQUEDA</span>
-                </div>
-                <div class="mt-2 grid grid-cols-3 gap-2 text-[11px] font-mono text-earth-dust/70">
-                  <div>ALT: <span class="text-white">22m</span></div>
-                  <div>VEL: <span class="text-white">4m/s</span></div>
-                  <div>BAT: <span id="ares-03-bat" class="text-emerald-400 font-bold">64%</span></div>
-                </div>
-              </div>
-
-              <div class="p-3 rounded-2xl bg-earth-950/80 border border-earth-800">
-                <div class="flex items-center justify-between">
-                  <span class="text-xs font-bold text-white flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-slate-500" id="ares-04-dot"></span>
-                    ARES-04 (Delta)
-                  </span>
-                  <span id="ares-04-status" class="text-[10px] px-2 py-0.5 rounded bg-earth-800 text-earth-dust/80 font-mono">STANDBY</span>
-                </div>
-                <div class="mt-2 grid grid-cols-3 gap-2 text-[11px] font-mono text-earth-dust/70">
-                  <div>ALT: <span class="text-white">0m</span></div>
-                  <div>VEL: <span class="text-white">0m/s</span></div>
-                  <div>BAT: <span class="text-emerald-400 font-bold">100%</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div id="handover-notification-box" class="mt-4 p-3.5 rounded-2xl bg-earth-950 border border-earth-800 text-xs text-earth-dust/80">
-            <strong class="text-amber-400">Regla de Handover al 22%:</strong> Si cualquier unidad agota su batería, la unidad de reserva despega y toma el relevo sin detener la búsqueda.
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Telemetría en Vivo y Descargas -->
-      <div class="p-6 bg-earth-950 border-t border-earth-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
-        <div class="flex items-center gap-2 text-emerald-400 font-medium">
-          <i data-lucide="radio" class="w-4 h-4"></i>
-          <span>CANAL DUAL RF/LORA + WEBSOCKETS (20 HZ SÍNCRONO)</span>
-        </div>
-        <div class="flex items-center gap-3">
-          <button onclick="downloadAARDossier()" class="px-4 py-2 rounded-xl bg-earth-900 border border-amber-500/30 text-amber-300 hover:bg-earth-800 transition-colors font-medium">
-            Descargar Dossier AAR (SHA-256)
-          </button>
-          <button onclick="downloadWaypointsFile()" class="px-4 py-2 rounded-xl bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/30 transition-colors font-medium">
-            Waypoints QGroundControl (.waypoints)
-          </button>
-        </div>
-      </div>
-
-    </div>
-
-  </section>
-
-  <!-- SECCIÓN 5: QUIÉNES LO HICIERON (INTEGRANTES Y TUTOR OFICIALES DEL PPT) -->
-  <section id="equipo" class="py-24 px-4 sm:px-6 max-w-6xl mx-auto z-10 relative">
-    
-    <div class="text-center max-w-3xl mx-auto mb-16">
-      <div class="inline-flex items-center gap-2 px-3 py-1 mb-3 text-xs font-medium text-emerald-400 bg-earth-900 border border-emerald-800 rounded-full">
-        <i data-lucide="users" class="w-3.5 h-3.5"></i>
-        EQUIPO CREADOR & INVESTIGACIÓN
-      </div>
-      <h2 class="text-3xl sm:text-5xl font-display font-extrabold text-white tracking-tight">
-        Quiénes desarrollaron BioScout
-      </h2>
-      <p class="mt-3 text-earth-dust text-sm sm:text-base leading-relaxed">
-        Los investigadores y desarrolladores que unieron robótica, visión artificial y edge computing para dar respuesta cuando la tierra tiembla.
-      </p>
-    </div>
-
-    <!-- Integrantes Oficiales Extraídos del PPT -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      
-      <!-- Integrante 1: Valentín García Dueñas -->
-      <div class="soft-card p-7 rounded-3xl flex flex-col items-center text-center group border-t-4 border-t-amber-500">
-        <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-amber-600 to-orange-400 p-0.5 shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform mb-4">
-          <div class="w-full h-full bg-earth-950 rounded-[14px] flex items-center justify-center text-amber-400">
-            <i data-lucide="user" class="w-10 h-10"></i>
-          </div>
-        </div>
-        <h3 class="font-display font-bold text-white text-xl">Valentín García Dueñas</h3>
-        <span class="text-xs font-mono text-amber-400 mt-1">Integrante &bull; BioScout Core</span>
-        <p class="mt-3 text-xs text-earth-dust/80 leading-relaxed">
-          Diseño y arquitectura del sistema de respuesta táctica, coordinación del enjambre y algoritmos de localización rápida en escenarios de desastre.
-        </p>
-        <div class="mt-5 pt-3 border-t border-earth-800 w-full flex items-center justify-center gap-2 text-earth-dust/60 text-[11px] font-mono">
-          <span>Percepción &bull; Enjambre</span>
-        </div>
-      </div>
-
-      <!-- Integrante 2: Jhoao López -->
-      <div class="soft-card p-7 rounded-3xl flex flex-col items-center text-center group border-t-4 border-t-cyan-500">
-        <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-cyan-600 to-teal-400 p-0.5 shadow-lg shadow-cyan-500/20 group-hover:scale-105 transition-transform mb-4">
-          <div class="w-full h-full bg-earth-950 rounded-[14px] flex items-center justify-center text-cyan-400">
-            <i data-lucide="user-check" class="w-10 h-10"></i>
-          </div>
-        </div>
-        <h3 class="font-display font-bold text-white text-xl">Jhoao López</h3>
-        <span class="text-xs font-mono text-cyan-400 mt-1">Integrante &bull; Inteligencia Artificial</span>
-        <p class="mt-3 text-xs text-earth-dust/80 leading-relaxed">
-          Entrenamiento de redes neuronales D-FINE (RT-DETR), calibración estadística FDR para eliminar falsos positivos y optimización de inferencia en tiempo real.
-        </p>
-        <div class="mt-5 pt-3 border-t border-earth-800 w-full flex items-center justify-center gap-2 text-earth-dust/60 text-[11px] font-mono">
-          <span>PyTorch &bull; TensorRT</span>
-        </div>
-      </div>
-
-      <!-- Integrante 3: Aron Ayala -->
-      <div class="soft-card p-7 rounded-3xl flex flex-col items-center text-center group border-t-4 border-t-emerald-500">
-        <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 p-0.5 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform mb-4">
-          <div class="w-full h-full bg-earth-950 rounded-[14px] flex items-center justify-center text-emerald-400">
-            <i data-lucide="cpu" class="w-10 h-10"></i>
-          </div>
-        </div>
-        <h3 class="font-display font-bold text-white text-xl">Aron Ayala</h3>
-        <span class="text-xs font-mono text-emerald-400 mt-1">Integrante &bull; Sistemas Embebidos Edge</span>
-        <p class="mt-3 text-xs text-earth-dust/80 leading-relaxed">
-          Implementación del procesamiento de borde 100% offline, gestión de persistencia local en SQLite WAL y protocolo de comunicación LoRa / RF de largo alcance.
-        </p>
-        <div class="mt-5 pt-3 border-t border-earth-800 w-full flex items-center justify-center gap-2 text-earth-dust/60 text-[11px] font-mono">
-          <span>Edge Computing &bull; LoRa Mesh</span>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Ficha Especial del Tutor (Del PPT: TUTOR: CHARLEN CALERO H.) -->
-    <div class="mt-8 soft-card p-8 rounded-3xl border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-4xl mx-auto">
-      <div class="flex items-center gap-5">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-orange-500 to-amber-400 p-0.5 flex-shrink-0">
-          <div class="w-full h-full bg-earth-950 rounded-[14px] flex items-center justify-center text-amber-400">
-            <i data-lucide="award" class="w-8 h-8"></i>
-          </div>
-        </div>
-        <div>
-          <span class="text-xs font-mono uppercase tracking-wider text-amber-400 font-bold">Dirección y Tutoría</span>
-          <h3 class="text-2xl font-display font-extrabold text-white mt-0.5">Charlen Calero H.</h3>
-          <p class="text-xs text-earth-dust/80 mt-1">
-            Asesoría metodológica, validación de arquitecturas de misión y rigurosidad técnica en sistemas aeroespaciales autónomos.
-          </p>
-        </div>
-      </div>
-      <div class="flex items-center gap-2 text-xs font-medium text-amber-300 bg-earth-900 px-4 py-2.5 rounded-2xl border border-amber-800 whitespace-nowrap">
-        <i data-lucide="check" class="w-4 h-4 text-amber-400"></i>
-        <span>Tutor del Proyecto</span>
-      </div>
-    </div>
-
-    <!-- Cierre Inspirador del PPT -->
-    <div class="mt-12 text-center max-w-2xl mx-auto">
-      <p class="text-lg font-display text-earth-dust italic">
-        "Las catástrofes no avisan. Pero podemos estar preparados."
-      </p>
-      <div class="mt-3 text-xs font-mono text-cyan-400 tracking-wider">
-        BIOSCOUT — INTELIGENCIA PARA RESPONDER CUANDO MÁS IMPORTA
-      </div>
-    </div>
-
-  </section>
-
-  <!-- FOOTER SUAVE -->
-  <footer class="border-t border-earth-800/80 bg-earth-950 py-12 px-6 text-center text-xs text-earth-dust/60 relative z-10">
-    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-      <div class="flex items-center gap-3 text-earth-dust">
-        <div class="w-8 h-8 rounded-xl bg-earth-900 border border-earth-800 flex items-center justify-center text-amber-400">
-          <i data-lucide="shield" class="w-4 h-4"></i>
-        </div>
-        <span class="font-bold text-white text-sm">BioScout</span>
-        <span>&bull; Módulo ARES de Rescate Autónomo</span>
-      </div>
-      <div class="font-mono text-earth-dust/70">
-        Valentín García &bull; Jhoao López &bull; Aron Ayala &bull; Tutor: Charlen Calero H.
+      <div>
+        <span>Despliegue Edge 100% Offline &bull; SENATI &bull; D-FINE RT-DETR</span>
       </div>
     </div>
   </footer>
 
   <!-- SCRIPTS MODULARES -->
-  <script src="src/js/waterfall.js"></script>
-  <script src="src/js/swarm.js"></script>
-  <script src="src/js/radar.js"></script>
+  <script src="src/js/radar3d.js"></script>
   <script src="src/js/video.js"></script>
   <script src="src/js/exporters.js"></script>
   <script src="src/js/main.js"></script>

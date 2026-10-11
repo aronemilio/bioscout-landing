@@ -1,81 +1,174 @@
 /**
- * BioScout ARES - Estilos del Sistema & Atmósfera de Misión
- * Temática: Terremoto, colapso de infraestructura, rescate autónomo y tierra
+ * BioScout ARES - Estética Táctica Militar / Rescate en Modo Oscuro
+ * bg-slate-950 con Acentos Cyan (#00f2fe) y Emerald (#10b981)
+ * Incluye Branding Holográfico Innovador SENATI y Efectos HUD
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+:root {
+  --cyan-primary: #00f2fe;
+  --cyan-glow: rgba(0, 242, 254, 0.35);
+  --emerald-primary: #10b981;
+  --emerald-glow: rgba(16, 185, 129, 0.35);
+  --senati-blue: #00509d;
+  --senati-cyan: #00b4d8;
+  --slate-dark: #020617;
+}
+
 body {
-  background-color: #070504;
-  color: #f8fafc;
+  background-color: #020617;
+  color: #f1f5f9;
   font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/* Lienzo de Cascada Continua (Ceniza, polvo en suspensión, sismos) */
-#infinite-waterfall-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0.65;
+/* Grilla Táctica Militar y Textura de Fondo */
+.bg-tactical-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
 }
 
-/* Enjambre de drones que acompaña la lectura */
-#swarm-companion-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 20;
+.radar-vignette {
+  background: radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.06) 0%, rgba(2, 6, 23, 0.95) 85%);
 }
 
-/* Tarjetas suaves tipo cristal de rescate */
-.soft-card {
-  background: rgba(22, 16, 12, 0.78);
+/* Retículas HUD en esquinas */
+.hud-corner {
+  position: relative;
+}
+.hud-corner::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px;
+  width: 12px; height: 12px;
+  border-top: 2px solid var(--cyan-primary);
+  border-left: 2px solid var(--cyan-primary);
+  pointer-events: none;
+}
+.hud-corner::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; right: -2px;
+  width: 12px; height: 12px;
+  border-bottom: 2px solid var(--cyan-primary);
+  border-right: 2px solid var(--cyan-primary);
+  pointer-events: none;
+}
+
+/* Tarjetas Tácticas Militares Desacopladas */
+.tactical-card {
+  background: rgba(15, 23, 42, 0.72);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(217, 119, 6, 0.15);
-  border-radius: 1.5rem;
-  box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.soft-card:hover {
-  border-color: rgba(6, 182, 212, 0.4);
-  transform: translateY(-3px);
-  box-shadow: 0 20px 40px -10px rgba(6, 182, 212, 0.15);
+.tactical-card:hover {
+  border-color: rgba(0, 242, 254, 0.5);
+  box-shadow: 0 15px 35px -5px rgba(0, 242, 254, 0.15);
+  transform: translateY(-2px);
 }
 
-/* Capa de textura de ciudad colapsada y grietas */
-.earthquake-backdrop {
-  background-image: 
-    radial-gradient(ellipse at 50% 0%, rgba(217, 119, 6, 0.15) 0%, transparent 65%),
-    radial-gradient(ellipse at 80% 40%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
-    radial-gradient(ellipse at 20% 80%, rgba(180, 83, 9, 0.12) 0%, transparent 60%);
+.tactical-glow-cyan {
+  box-shadow: 0 0 25px rgba(0, 242, 254, 0.25);
 }
 
-/* Video integrado con marco suave y luz de reflector */
-.video-cascade-glow {
-  box-shadow: 0 0 50px -10px rgba(6, 182, 212, 0.3), 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+.tactical-glow-emerald {
+  box-shadow: 0 0 25px rgba(16, 185, 129, 0.25);
 }
 
-/* Scrollbar suave táctico */
+/* ============================================================
+   EMBLEMA ANIMADO INNOVADOR SENATI (HOLOGRAPHIC GEAR BADGE)
+   ============================================================ */
+.senati-hologram-card {
+  background: radial-gradient(circle at 50% 50%, rgba(0, 80, 157, 0.18) 0%, rgba(15, 23, 42, 0.95) 80%);
+  border: 1px solid rgba(0, 180, 216, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Engranaje giratorio exterior */
+.senati-gear-ring {
+  animation: senatiGearSpin 24s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes senatiGearSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Anillo HUD concéntrico en contragiros */
+.senati-hud-ring {
+  animation: senatiHudSpin 12s linear infinite reverse;
+  transform-origin: center;
+}
+
+@keyframes senatiHudSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Pulso electromagnético del núcleo SENATI */
+.senati-core-pulse {
+  animation: senatiPulse 3s ease-in-out infinite;
+}
+
+@keyframes senatiPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px rgba(0, 180, 216, 0.4)) drop-shadow(0 0 20px rgba(0, 80, 157, 0.3));
+    opacity: 0.9;
+  }
+  50% {
+    filter: drop-shadow(0 0 18px rgba(0, 242, 254, 0.9)) drop-shadow(0 0 35px rgba(0, 119, 182, 0.7));
+    opacity: 1;
+  }
+}
+
+/* Línea de barrido holográfico sobre el logo SENATI */
+.senati-scanline {
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 100%;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 242, 254, 0.12) 50%, transparent 100%);
+  animation: senatiScan 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes senatiScan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+/* Modal táctico de Pitch */
+#pitch-modal {
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+#pitch-modal.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+#pitch-modal:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Scrollbar táctico */
 ::-webkit-scrollbar {
-  width: 7px;
+  width: 6px;
 }
-
 ::-webkit-scrollbar-track {
-  background: #070504;
+  background: #020617;
 }
-
 ::-webkit-scrollbar-thumb {
-  background: #2b1f17;
+  background: #1e293b;
   border-radius: 9999px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
-  background: #d97706;
+  background: #00f2fe;
 }
