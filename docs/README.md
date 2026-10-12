@@ -1,6 +1,8 @@
 # BioScout ARES - Estructura del Proyecto & Documentación
 
-Plataforma interactiva para la orquestación autónoma de enjambres de drones de rescate (UAVs) en zonas de catástrofe y colapso estructural durante la "Hora Dorada" (< 60 minutos).
+Plataforma interactiva e independiente para la orquestación autónoma de enjambres de drones de rescate (UAVs) en zonas de catástrofe y colapso estructural durante la **"Hora Dorada" (<60 min)**.
+
+Repositorio Oficial en GitHub: [https://github.com/NotMetrx/ARES-Autonomous-Rescue-Emergency-System-](https://github.com/NotMetrx/ARES-Autonomous-Rescue-Emergency-System-)
 
 ---
 
@@ -8,12 +10,11 @@ Plataforma interactiva para la orquestación autónoma de enjambres de drones de
 
 ```text
 bioscout-landing/
+├── index.html                    # Punto de entrada unificado y standalone (SPA)
 ├── assets/                       # Recursos estáticos organizados por tipo
 │   ├── docs/                     # Presentaciones y documentos de soporte
 │   │   └── Cuando-la-tierra-tiembla final.pptx
 │   ├── images/                   # Diagramas, logos y capturas de campo
-│   │   ├── image1.png ... image21.png
-│   │   └── image4.jpg ... image18.jpg
 │   └── video/                    # Video de demostración de misión
 │       └── Sin sub.mp4
 │
@@ -24,19 +25,16 @@ bioscout-landing/
 │
 ├── src/                          # Código fuente modularizado
 │   ├── css/
-│   │   └── styles.css            # Hoja de estilos desacoplada (dark/earth theme)
+│   │   └── styles.css            # Hoja de estilos desacoplada
 │   └── js/
 │       ├── main.js               # Coordinador principal y bootstrap
-│       ├── waterfall.js          # Cascada continua de partículas de tierra/ceniza
-│       ├── swarm.js              # Cinemática y formaciones del enjambre de 4 UAVs
-│       ├── radar.js              # Simulador de radar 2D/3D (CPA y Handover 22%)
+│       ├── radar.js              # Simulador de radar 2D (CPA y Handover 22%)
 │       ├── video.js              # Controles del reproductor integrado
 │       └── exporters.js          # Descarga de AAR (SHA-256) y .waypoints QGC
 │
-├── index.html                    # Punto de entrada unificado (Single Page Application)
-├── package.json                  # Definición de dependencias
-├── .gitignore                    # Reglas de exclusión para Git (>100MB videos, node_modules)
-└── Sin sub.mp4                   # Archivo de video en raíz para retrocompatibilidad
+├── README.md                     # Documentación principal en raíz
+├── SPEC.md                       # Especificación técnica inmutable en raíz
+└── Protocolo .md                 # Protocolo de operación en raíz
 ```
 
 ---
@@ -50,14 +48,14 @@ El proyecto está diseñado bajo arquitectura desacoplada y compatible con servi
 python3 -m http.server 8080
 
 # Abrir en el navegador:
-http://localhost:8080
+# http://localhost:8080
 ```
 
 ---
 
-## 👥 Equipo Oficial del Proyecto
+## 👥 Equipo Oficial del Proyecto (SENATI)
 
-- **Valentín García Dueñas** — Integrante / BioScout Core & Coordinación de Enjambre
-- **Jhoao López** — Integrante / Inteligencia Artificial & D-FINE RT-DETR
-- **Aron Ayala** — Integrante / Sistemas Embebidos Edge Computing & LoRa Mesh
+- **Jhoao López** — Tech Lead / Frontend & Consola Táctica HUD
+- **Aron Ayala** — Lead & QA / Tester & Sistemas Embebidos LoRa
+- **Valentín García** — AI & Backend Architect & Percepción D-FINE
 - **Charlen Calero H.** — Tutor & Dirección Técnica
