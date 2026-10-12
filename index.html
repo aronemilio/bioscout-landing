@@ -539,34 +539,11 @@
       </p>
 
       <!-- ============================================================
-           VIDEO PITCH EXPLICATIVO (ABOVE THE FOLD - 16:9 CON HUD TÁCTICO)
+           VIDEO PITCH EXPLICATIVO (ABOVE THE FOLD - VIDEO PURO DE MISIÓN)
            ============================================================ -->
-      <div class="mt-10 w-full max-w-4xl hero-video-frame">
-        
-        <!-- Barra Superior de Control Táctico del Video -->
-        <div class="px-5 py-3 bg-obsidian-900/95 border-b border-cyan-500/20 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
-          <div class="flex items-center gap-2.5 text-cyan-400">
-            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-            <span class="font-bold tracking-wider text-white text-[11px] sm:text-xs">DEMOSTRACIÓN DE MISIÓN EN VIVO &bull; PRUEBAS DE VUELO REALES</span>
-          </div>
-          
-          <div class="flex items-center gap-2.5">
-            <button onclick="toggleVideoPlayback()" id="video-play-btn" class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-obsidian-800 text-slate-200 hover:text-cyan-300 hover:bg-obsidian-750 transition-all border border-cyan-500/20">
-              <i data-lucide="pause" class="w-3.5 h-3.5" id="video-play-icon"></i>
-              <span id="video-play-text">Pausar</span>
-            </button>
-            <button onclick="toggleMuteVideo()" id="video-mute-btn" class="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-obsidian-800 text-slate-200 hover:text-emerald-300 hover:bg-obsidian-750 transition-all border border-emerald-500/20">
-              <i data-lucide="volume-2" class="w-3.5 h-3.5" id="video-mute-icon"></i>
-              <span id="video-mute-text">Sonido</span>
-            </button>
-            <button onclick="openVideoModal()" title="Abrir en pantalla táctica ampliada" class="p-1.5 rounded-lg bg-obsidian-800 text-slate-200 hover:text-cyan-300 border border-slate-700 transition-colors">
-              <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
-        </div>
-
+      <div class="mt-8 w-full max-w-4xl hero-video-frame relative group">
         <!-- Contenedor Responsivo 16:9 del Video -->
-        <div class="relative aspect-video bg-black flex items-center justify-center">
+        <div class="relative aspect-video bg-black flex items-center justify-center overflow-hidden">
           <video id="hero-main-video" autoplay muted loop playsinline controls class="w-full h-full object-cover">
             <source src="assets/video/Sin%20sub.mp4" type="video/mp4">
             <source src="assets/video/Sin sub.mp4" type="video/mp4">
@@ -575,19 +552,6 @@
             Tu navegador no soporta reproducción de video HTML5.
           </video>
         </div>
-
-        <!-- Pie Táctico del Video con Metadatos -->
-        <div class="px-5 py-2.5 bg-obsidian-950 flex flex-col sm:flex-row items-center justify-between text-[11px] font-mono text-slate-400 gap-2 border-t border-slate-850">
-          <span class="flex items-center gap-1.5">
-            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
-            Algoritmos D-FINE RT-DETR + Burbuja de Evasión 15m Validados en Campo.
-          </span>
-          <button onclick="openVideoModal()" class="text-cyan-400 hover:text-cyan-300 font-semibold flex items-center gap-1 transition-colors">
-            <span>Visualizar en ventana ampliada</span>
-            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
-          </button>
-        </div>
-
       </div>
 
       <!-- Botones de Acción (CTAs) Debajo del Video -->
