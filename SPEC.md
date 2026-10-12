@@ -18,7 +18,9 @@
 - Tipo: Single Page Application (SPA) táctica, interactiva y de alto rendimiento.
 - Entorno: Compatible con despliegue en Linux mediante Antigravity CLI / servidores estáticos locales (`python3 -m http.server`).
 - UI/UX & Atmósfera de Misión:
-  - Estética visual: Paleta táctica obsidiana (#04070b / #06090e) con acentos en cian táctico (#06b6d4) y verde esmeralda (#10b981).
+  - Estética visual: Paleta táctica obsidiana (#030508 / #05080d) con acentos en cian táctico (#06b6d4) y verde esmeralda (#10b981).
+  - Fondo dinámico táctico: Canvas con partículas en suspensión (polvo sísmico y micro-destellos de rescate), combinado con malla topográfica/lidar sutil y haces de luz ambientales.
+  - Animación breve de sobrevuelo de enjambre (Flyover inicial): Al cargar la página, los 4 drones ARES cruzan el espacio aéreo en formación táctica con estelas luminosas y conos de escaneo láser, desvaneciéndose suavemente a los 3.5s (con botón para repetir el sobrevuelo en el navbar).
   - Tipografía: Plus Jakarta Sans para interfaz general y JetBrains Mono para telemetría, métricas y HUD.
   - Video Pitch Above the Fold: Contenedor 16:9 integrado directamente en el Hero con marco HUD táctico, controles rápidos y brillo sutil.
   - Redirección al Repositorio: Enlaces directos a `https://github.com/NotMetrx/ARES-Autonomous-Rescue-Emergency-System-` en el Header y botones principales.
@@ -37,10 +39,6 @@
   - Tutor: Charlen Calero H.
 
 ## 4. Protocolo de Modificación de Reglas (Self-Update)
-- Cada adición o cambio de arquitectura debe quedar registrada bajo una versión incremental.
-- Formato de registro de cambios:
-  - `[TIMESTAMP] - [MODIFICADO/AÑADIDO/ELIMINADO] - Regla X: Descripción`.
-
 ### Registro Histórico de Versiones
 - `[2026-10-10T23:53:00-05:00] - [AÑADIDO] - Regla 3.1: Interfaz Táctica ARES v2.0 con Radar Canvas reactivo (15m bubble, CPA vectoring), Telemetría en vivo (10-30Hz), Modal de Video para Sin sub.mp4 y exportador criptográfico AAR/Waypoints.`
 - `[2026-10-11T00:03:00-05:00] - [MODIFICADO] - Regla 3.2: Evolución a SPA Inmersiva Scrollytelling con Cascada Infinita de partículas, enjambre de drones reactivo al scroll, sección de proceso/génesis de la solución, y presentación del equipo creador con UI atractiva y amigable.`
@@ -49,3 +47,4 @@
 - `[2026-10-11T01:50:00-05:00] - [MODIFICADO] - Regla 3.5: Landing Page Épica de Alto Nivel BioScout ARES: Estética táctica militar/rescate en bg-slate-950 con acentos cyan (#00f2fe) y emerald (#10b981), Hero con contador de Hora Dorada (<60 min) y telemetría en vivo.`
 - `[2026-10-11T02:08:00-05:00] - [MODIFICADO] - Regla 3.6: Enfoque Apple/Huawei para jurados de concurso: video protagónico al entrar con animación de enjambre, paleta de colores de tierra/terremoto/emergencia y logo de SENATI para concurso estudiantil.`
 - `[2026-10-12T16:25:00-05:00] - [MODIFICADO] - Regla 3.7: Adaptación completa de interfaz al español técnico, paleta táctica obsidiana/cian/esmeralda (#04070b / #06b6d4 / #10b981), video pitch Above the Fold en el Hero con marco HUD táctico, enlaces directos al repositorio oficial ARES en GitHub (NotMetrx), y sección de casos históricos de desastres en Latinoamérica (Tragedia de Vargas, Avalancha de Mocoa, Terremoto de Pisco).`
+- `[2026-10-12T17:15:00-05:00] - [MODIFICADO] - Regla 3.8: Rediseño del fondo táctico ambiental con partículas en suspensión (polvo/escombros) y malla lidar de contornos topográficos; animación cinemática breve de sobrevuelo del enjambre de 4 drones (ARES 01-04) al cargar la página con estelas de plasma, conos de escaneo térmico descendente y botón de repetición en el navbar.`

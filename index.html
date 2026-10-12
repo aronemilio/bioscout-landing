@@ -23,7 +23,7 @@
           },
           colors: {
             obsidian: {
-              950: '#04070b',
+              950: '#030508',
               900: '#06090e',
               850: '#0b111c',
               800: '#101826',
@@ -36,13 +36,13 @@
               emeraldGlow: '#34d399',
               rose: '#f43f5e',
               amber: '#f59e0b',
-              dark: '#04070b'
+              dark: '#030508'
             }
           },
           animation: {
             'radar-pulse': 'radarPulse 3s cubic-bezier(0, 0, 0.2, 1) infinite',
             'beacon-ping': 'beaconPing 1.8s cubic-bezier(0, 0, 0.2, 1) infinite',
-            'grid-travel': 'gridTravel 20s linear infinite',
+            'grid-travel': 'gridTravel 24s linear infinite',
           },
           keyframes: {
             radarPulse: {
@@ -55,7 +55,7 @@
             },
             gridTravel: {
               '0%': { transform: 'translateY(0)' },
-              '100%': { transform: 'translateY(60px)' }
+              '100%': { transform: 'translateY(80px)' }
             }
           }
         }
@@ -69,7 +69,7 @@
   <!-- Estilos Tácticos Personalizados, Aceternity UI 3D Tilt y Magic UI Motion -->
   <style>
     :root {
-      --bg-obsidian: #04070b;
+      --bg-obsidian: #030508;
       --cyan-accent: #06b6d4;
       --emerald-accent: #10b981;
       --ease-fluid: cubic-bezier(0.16, 1, 0.3, 1);
@@ -85,83 +85,97 @@
 
     ::selection {
       background: #06b6d4;
-      color: #04070b;
+      color: #030508;
     }
 
-    /* 1. MAGIC UI RETRO GRID & PERSPECTIVA 3D TÁCTICA */
-    .retro-grid-container {
+    /* 1. FONDO TÁCTICO ATMOSFÉRICO AVANZADO: MALLA LIDAR & TOPOGRAFÍA SÍSMICA */
+    .tactical-bg-layer {
       position: fixed;
       inset: 0;
       pointer-events: none;
       z-index: 0;
       overflow: hidden;
-      perspective: 1000px;
     }
 
-    .retro-grid-plane {
+    /* Lienzo de polvo y partículas en suspensión */
+    #ambient-particles-canvas {
       position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background-image: 
-        linear-gradient(to right, rgba(6, 182, 212, 0.08) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(6, 182, 212, 0.08) 1px, transparent 1px);
-      background-size: 60px 60px;
-      transform: rotateX(65deg);
-      transform-origin: 50% 50%;
-      animation: gridTravel 18s linear infinite;
-      mask-image: radial-gradient(ellipse 70% 55% at 50% 30%, #000 20%, transparent 80%);
-      -webkit-mask-image: radial-gradient(ellipse 70% 55% at 50% 30%, #000 20%, transparent 80%);
-    }
-
-    .ambient-glow-orbs {
-      position: fixed;
       inset: 0;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
-      z-index: 1;
-      overflow: hidden;
     }
 
-    .glow-orb-cyan {
+    /* Malla Topográfica / Radar Isoclínico */
+    .tactical-topomesh {
       position: absolute;
-      width: 750px;
-      height: 750px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(6, 182, 212, 0.15) 0%, rgba(6, 182, 212, 0) 70%);
-      top: -160px;
-      left: 50%;
-      transform: translateX(-50%);
-      filter: blur(45px);
-      transition: transform 0.6s var(--ease-fluid);
+      inset: -20%;
+      width: 140%;
+      height: 140%;
+      background-image: 
+        radial-gradient(circle at 50% 30%, rgba(6, 182, 212, 0.12) 0%, transparent 60%),
+        radial-gradient(circle at 85% 65%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 15% 75%, rgba(6, 182, 212, 0.06) 0%, transparent 55%),
+        linear-gradient(to right, rgba(6, 182, 212, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 50px 50px, 50px 50px;
+      opacity: 0.85;
     }
 
-    .glow-orb-emerald {
+    /* Ondas de contorno táctico */
+    .topographic-lines {
       position: absolute;
-      width: 600px;
-      height: 600px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0) 70%);
-      top: 45%;
-      right: -120px;
-      filter: blur(55px);
+      inset: 0;
+      background: radial-gradient(ellipse 90% 60% at 50% 20%, transparent 40%, rgba(6, 182, 212, 0.03) 65%, transparent 70%);
+      pointer-events: none;
     }
 
     /* Foco interactivo del cursor */
     #interactive-mouse-spotlight {
       position: fixed;
-      width: 600px;
-      height: 600px;
+      width: 650px;
+      height: 650px;
       border-radius: 50%;
       pointer-events: none;
       z-index: 2;
-      background: radial-gradient(circle, rgba(6, 182, 212, 0.08) 0%, rgba(6, 182, 212, 0) 70%);
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.09) 0%, rgba(6, 182, 212, 0) 70%);
       transform: translate(-50%, -50%);
       transition: opacity 0.3s ease;
       opacity: 0;
     }
 
-    /* 2. ACETERNITY UI 3D PERSPECTIVE TILT CARDS & SPOTLIGHT */
+    /* 2. CANVAS DEL SOBREVUELO INICIAL DEL ENJAMBRE DE DRONES */
+    #swarm-flyover-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 45;
+      overflow: hidden;
+      transition: opacity 0.8s ease-out;
+    }
+
+    #swarm-flyover-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #flyover-hud-banner {
+      position: absolute;
+      top: 96px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 46;
+      transition: opacity 0.5s ease-out;
+    }
+
+    /* 3. ACETERNITY UI 3D PERSPECTIVE TILT CARDS & SPOTLIGHT */
     .perspective-container {
       perspective: 1200px;
     }
@@ -196,7 +210,7 @@
       transition: transform 0.4s var(--ease-fluid);
     }
 
-    /* 3. MAGIC UI BORDER BEAM / ROTATING LIGHT BEAM */
+    /* 4. MAGIC UI BORDER BEAM / ROTATING LIGHT BEAM */
     .shine-border-wrapper {
       position: relative;
       border-radius: 1.25rem;
@@ -341,7 +355,7 @@
       width: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: #04070b;
+      background: #030508;
     }
     ::-webkit-scrollbar-thumb {
       background: #101826;
@@ -387,24 +401,36 @@
 <body class="bg-obsidian-950 text-slate-100 min-h-screen antialiased flex flex-col justify-between relative selection:bg-cyan-500 selection:text-obsidian-950">
 
   <!-- ============================================================
-       FONDO DINÁMICO: MAGIC UI RETRO GRID & FOCO INTERACTIVO
+       1. FONDO TÁCTICO ATMOSFÉRICO: POLVO EN SUSPENSIÓN & MALLA LIDAR
        ============================================================ -->
-  <div class="retro-grid-container">
-    <div class="retro-grid-plane"></div>
+  <div class="tactical-bg-layer">
+    <div class="tactical-topomesh"></div>
+    <div class="topographic-lines"></div>
+    <!-- Canvas de partículas de polvo y destellos de rescate -->
+    <canvas id="ambient-particles-canvas"></canvas>
   </div>
 
-  <div class="ambient-glow-orbs">
-    <div class="glow-orb-cyan" id="ambient-cyan-orb"></div>
-    <div class="glow-orb-emerald"></div>
-  </div>
-
+  <!-- Foco interactivo del cursor -->
   <div id="interactive-mouse-spotlight"></div>
+
+  <!-- ============================================================
+       2. CANVAS DE SOBREVUELO INICIAL DEL ENJAMBRE DE DRONES
+       ============================================================ -->
+  <div id="swarm-flyover-container">
+    <canvas id="swarm-flyover-canvas"></canvas>
+    
+    <!-- Banner HUD táctico temporal -->
+    <div id="flyover-hud-banner" class="px-4 py-2 rounded-full bg-obsidian-900/90 border border-cyan-500/40 text-cyan-300 font-mono text-xs tracking-wider shadow-xl shadow-cyan-950/80 backdrop-blur-md flex items-center gap-2.5">
+      <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+      <span>DESPLIEGUE INICIAL: ESCUADRÓN ARES EN VUELO &bull; ESCANEO DE HORA DORADA ACTIVO</span>
+    </div>
+  </div>
 
   <!-- Contenedor de Contenido Principal -->
   <div class="relative z-10 flex flex-col justify-between min-h-screen">
 
     <!-- ============================================================
-         1. NAVBAR TÁCTICO
+         NAVBAR TÁCTICO
          ============================================================ -->
     <header class="fixed top-0 w-full z-40 bg-obsidian-950/85 backdrop-blur-xl border-b border-cyan-500/20 transition-all">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
@@ -433,7 +459,7 @@
         </a>
 
         <!-- Enlaces de Navegación -->
-        <nav class="hidden lg:flex items-center gap-7 text-xs font-mono font-medium tracking-wide text-slate-300">
+        <nav class="hidden lg:flex items-center gap-6 text-xs font-mono font-medium tracking-wide text-slate-300">
           <a href="#hero" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5 py-1">
             <span class="text-cyan-500">01//</span> VISIÓN GENERAL
           </a>
@@ -451,10 +477,16 @@
           </a>
         </nav>
 
-        <!-- Reloj Zulu y Botón Directo al Repositorio Oficial -->
-        <div class="flex items-center gap-4">
-          <!-- Reloj Zulu UTC y Enlace de Telemetría -->
-          <div class="hidden sm:flex flex-col text-right font-mono text-[11px] pr-3 border-r border-slate-800">
+        <!-- Botones de Acción: Repetición de Sobrevuelo + Enlace a GitHub -->
+        <div class="flex items-center gap-3">
+          <!-- Botón de Repetición del Sobrevuelo del Enjambre -->
+          <button onclick="replaySwarmFlyover()" title="Ver de nuevo el sobrevuelo cinemático del enjambre" class="px-3 py-2 rounded-xl bg-obsidian-900 hover:bg-obsidian-850 border border-cyan-500/30 text-cyan-300 hover:text-white hover:border-cyan-400 transition-all flex items-center gap-1.5 text-xs font-mono group">
+            <i data-lucide="plane" class="w-3.5 h-3.5 text-cyan-400 group-hover:rotate-45 transition-transform"></i>
+            <span class="hidden sm:inline">Sobrevuelo Enjambre</span>
+          </button>
+
+          <!-- Reloj Zulu UTC (Desktop) -->
+          <div class="hidden xl:flex flex-col text-right font-mono text-[11px] pr-3 border-r border-slate-800">
             <div class="text-cyan-400 font-semibold flex items-center justify-end gap-1.5">
               <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
               <span id="nav-zulu-clock">00:00:00Z</span>
@@ -462,12 +494,12 @@
             <div class="text-slate-500 text-[10px]">MALLA LORA: ACTIVA</div>
           </div>
 
-          <!-- Botón de Redirección al Repositorio Oficial con Haz Giratorio -->
+          <!-- Botón Directo al Repositorio Oficial con Haz Giratorio -->
           <div class="btn-shine-beam">
             <div class="beam-spinner"></div>
-            <a href="https://github.com/NotMetrx/ARES-Autonomous-Rescue-Emergency-System-" target="_blank" rel="noopener noreferrer" class="beam-inner px-4 py-2 sm:px-5 sm:py-2.5 text-cyan-300 font-bold font-mono text-xs tracking-wider uppercase flex items-center gap-2 group">
+            <a href="https://github.com/NotMetrx/ARES-Autonomous-Rescue-Emergency-System-" target="_blank" rel="noopener noreferrer" class="beam-inner px-3.5 py-2 sm:px-5 sm:py-2.5 text-cyan-300 font-bold font-mono text-xs tracking-wider uppercase flex items-center gap-2 group">
               <i data-lucide="github" class="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform"></i>
-              <span>REPOSITORIO ARES</span>
+              <span class="hidden sm:inline">REPOSITORIO ARES</span>
               <i data-lucide="external-link" class="w-3 h-3 text-cyan-400/70 group-hover:translate-x-0.5 transition-transform"></i>
             </a>
           </div>
@@ -477,7 +509,7 @@
     </header>
 
     <!-- ============================================================
-         2. HERO SECTION & VIDEO PITCH EXPLICATIVO (ABOVE THE FOLD)
+         HERO SECTION & VIDEO PITCH EXPLICATIVO (ABOVE THE FOLD)
          ============================================================ -->
     <section id="hero" class="relative pt-32 sm:pt-40 pb-20 px-4 sm:px-6 max-w-7xl mx-auto flex flex-col items-center text-center">
       
@@ -656,7 +688,7 @@
     </section>
 
     <!-- ============================================================
-         3. IMPACTO REGIONAL & EVIDENCIA HISTÓRICA (LATINOAMÉRICA)
+         IMPACTO REGIONAL & EVIDENCIA HISTÓRICA (LATINOAMÉRICA)
          ACETERNITY UI 3D PERSPECTIVE TILT CARDS & SPOTLIGHT
          ============================================================ -->
     <section id="impacto-regional" class="py-24 px-4 sm:px-6 max-w-7xl mx-auto relative">
@@ -803,7 +835,7 @@
     </section>
 
     <!-- ============================================================
-         4. RADAR TÁCTICO INTERACTIVO 2D (HTML5 CANVAS)
+         RADAR TÁCTICO INTERACTIVO 2D (HTML5 CANVAS)
          CON BORDES ILUMINADOS MAGIC UI (SHINE BORDER BEAM)
          ============================================================ -->
     <section id="radar-tactico" class="py-24 px-4 sm:px-6 max-w-7xl mx-auto relative">
@@ -1004,7 +1036,7 @@
     </section>
 
     <!-- ============================================================
-         5. ARQUITECTURA DEL SISTEMA
+         ARQUITECTURA DEL SISTEMA
          ============================================================ -->
     <section id="arquitectura" class="py-24 px-4 sm:px-6 max-w-7xl mx-auto relative">
       
@@ -1134,7 +1166,7 @@
     </section>
 
     <!-- ============================================================
-         6. EQUIPO DE MANDO
+         EQUIPO DE MANDO
          ============================================================ -->
     <section id="equipo-mando" class="py-24 px-4 sm:px-6 max-w-7xl mx-auto relative">
       
@@ -1267,7 +1299,7 @@
     </section>
 
     <!-- ============================================================
-         7. MODAL DE VIDEO INTERACTIVO (OVERLAY 16:9 EN ALTA DEFINICIÓN)
+         MODAL DE VIDEO INTERACTIVO (OVERLAY 16:9 EN ALTA DEFINICIÓN)
          ============================================================ -->
     <div id="video-modal" class="fixed inset-0 z-50 bg-obsidian-950/90 backdrop-blur-md hidden-modal flex items-center justify-center p-4 sm:p-6">
       <div class="modal-panel relative w-full max-w-5xl bg-obsidian-950/95 border border-cyan-500/40 rounded-3xl overflow-hidden shadow-[0_0_90px_rgba(6,182,212,0.3)] flex flex-col backdrop-blur-xl">
@@ -1337,10 +1369,10 @@
   </div>
 
   <!-- ============================================================
-       SCRIPTS DE INTERACTIVIDAD, CANVAS RADAR, TICKER Y VIDEOS
+       SCRIPTS: ANIMACIÓN DE SOBREVUELO, POLVO AMBIENTAL, RADAR Y MOTION
        ============================================================ -->
   <script>
-    // Inicialización de Iconos Lucide
+    // Inicialización de componentes al cargar el DOM
     document.addEventListener('DOMContentLoaded', () => {
       if (window.lucide) {
         lucide.createIcons();
@@ -1349,12 +1381,223 @@
       initMagicUiNumberTicker();
       initAceternityTiltCards();
       initInteractiveMouseSpotlight();
+      initAmbientParticles();
+      initSwarmFlyoverAnimation();
     });
 
-    // 1. Foco Táctico que Sigue al Cursor (Magic UI Spotlight)
+    // 1. PARTICULAS AMBIENTALES DE POLVO/CENIZAS Y RESCATE EN SUSPENSIÓN
+    function initAmbientParticles() {
+      const canvas = document.getElementById('ambient-particles-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w, h;
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      const particles = [];
+      const count = Math.min(Math.floor(window.innerWidth / 16), 75);
+
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: Math.random() * 1.8 + 0.4,
+          vx: (Math.random() - 0.5) * 0.35,
+          vy: Math.random() * -0.45 - 0.1, // Flotación ascendente suave como ceniza/polvo
+          alpha: Math.random() * 0.6 + 0.1,
+          color: Math.random() > 0.4 ? 'rgba(6, 182, 212, ' : 'rgba(16, 185, 129, '
+        });
+      }
+
+      function render() {
+        ctx.clearRect(0, 0, w, h);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.y < 0) {
+            p.y = h + 10;
+            p.x = Math.random() * w;
+          }
+          if (p.x < 0) p.x = w;
+          if (p.x > w) p.x = 0;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color + p.alpha + ')';
+          ctx.fill();
+        });
+        requestAnimationFrame(render);
+      }
+      requestAnimationFrame(render);
+    }
+
+    // 2. ANIMACIÓN BREVE DE SOBREVUELO DEL ENJAMBRE AL CARGAR LA PÁGINA
+    function initSwarmFlyoverAnimation() {
+      const container = document.getElementById('swarm-flyover-container');
+      const canvas = document.getElementById('swarm-flyover-canvas');
+      const banner = document.getElementById('flyover-hud-banner');
+      if (!canvas || !container) return;
+
+      const ctx = canvas.getContext('2d');
+      let w, h;
+
+      function resize() {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resize);
+      resize();
+
+      // 4 Drones tácticos en formación delta/diamante
+      let drones = [
+        { id: 'ARES-01', x: -160, y: h * 0.28, vx: 16.5, color: '#00f2fe', label: 'ARES-01 (Alfa)', scanSize: 110, trail: [] },
+        { id: 'ARES-02', x: -250, y: h * 0.20, vx: 17.2, color: '#10b981', label: 'ARES-02 (Bravo)', scanSize: 85, trail: [] },
+        { id: 'ARES-03', x: -290, y: h * 0.38, vx: 15.8, color: '#38bdf8', label: 'ARES-03 (Charlie)', scanSize: 95, trail: [] },
+        { id: 'ARES-04', x: -370, y: h * 0.26, vx: 16.2, color: '#34d399', label: 'ARES-04 (Delta)', scanSize: 75, trail: [] }
+      ];
+
+      let rotorAngle = 0;
+      let active = true;
+
+      function renderFlyover() {
+        if (!active) return;
+        ctx.clearRect(0, 0, w, h);
+        rotorAngle += 0.85;
+
+        let allFinished = true;
+
+        drones.forEach(d => {
+          d.x += d.vx;
+          if (d.x < w + 350) {
+            allFinished = false;
+          }
+
+          // Guardar estela aerodinámica de plasma
+          d.trail.push({ x: d.x, y: d.y });
+          if (d.trail.length > 28) d.trail.shift();
+
+          // Dibujar estela luminosa (Vortex stream)
+          for (let i = 0; i < d.trail.length - 1; i++) {
+            const p1 = d.trail[i];
+            const p2 = d.trail[i + 1];
+            const alpha = (i / d.trail.length) * 0.65;
+            ctx.strokeStyle = d.color;
+            ctx.globalAlpha = alpha;
+            ctx.lineWidth = (i / d.trail.length) * 3.5;
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.stroke();
+          }
+          ctx.globalAlpha = 1.0;
+
+          // Renderizar dron mientras esté cerca o dentro de la pantalla
+          if (d.x > -80 && d.x < w + 80) {
+            ctx.save();
+            ctx.translate(d.x, d.y);
+
+            // Cono Lidar de escaneo volumétrico descendente
+            const scanGrad = ctx.createLinearGradient(0, 0, 0, d.scanSize);
+            scanGrad.addColorStop(0, 'rgba(6, 182, 212, 0.45)');
+            scanGrad.addColorStop(0.7, 'rgba(6, 182, 212, 0.15)');
+            scanGrad.addColorStop(1, 'rgba(6, 182, 212, 0)');
+            ctx.fillStyle = scanGrad;
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-d.scanSize * 0.45, d.scanSize);
+            ctx.lineTo(d.scanSize * 0.45, d.scanSize);
+            ctx.closePath();
+            ctx.fill();
+
+            // Chasis del cuadricóptero
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(-18, -18); ctx.lineTo(18, 18);
+            ctx.moveTo(18, -18); ctx.lineTo(-18, 18);
+            ctx.stroke();
+
+            // Rotores en rotación rápida
+            const propOffsets = [[-18, -18], [18, -18], [-18, 18], [18, 18]];
+            ctx.strokeStyle = d.color;
+            ctx.lineWidth = 1.8;
+            propOffsets.forEach(([px, py]) => {
+              ctx.save();
+              ctx.translate(px, py);
+              ctx.rotate(rotorAngle);
+              ctx.beginPath();
+              ctx.ellipse(0, 0, 9, 3, 0, 0, Math.PI * 2);
+              ctx.stroke();
+              ctx.restore();
+            });
+
+            // Núcleo central
+            ctx.fillStyle = '#06090e';
+            ctx.strokeStyle = d.color;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.roundRect(-9, -9, 18, 18, 5);
+            ctx.fill();
+            ctx.stroke();
+
+            // LED estroboscópico de navegación frontal
+            ctx.fillStyle = d.color;
+            ctx.beginPath();
+            ctx.arc(0, 0, 3.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Etiqueta HUD táctica del dron
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 9px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(d.label, 0, -22);
+
+            ctx.restore();
+          }
+        });
+
+        if (!allFinished) {
+          requestAnimationFrame(renderFlyover);
+        } else {
+          // Desvanecer suavemente al completar el sobrevuelo (~3.5 s)
+          container.style.opacity = '0';
+          if (banner) banner.style.opacity = '0';
+          setTimeout(() => {
+            container.style.display = 'none';
+            active = false;
+          }, 850);
+        }
+      }
+
+      // Iniciar el sobrevuelo inmediatamente
+      requestAnimationFrame(renderFlyover);
+
+      // Función global para repetir el sobrevuelo en cualquier momento
+      window.replaySwarmFlyover = function() {
+        active = true;
+        container.style.display = 'block';
+        container.style.opacity = '1';
+        if (banner) banner.style.opacity = '1';
+
+        drones = [
+          { id: 'ARES-01', x: -160, y: h * 0.28, vx: 16.5, color: '#00f2fe', label: 'ARES-01 (Alfa)', scanSize: 110, trail: [] },
+          { id: 'ARES-02', x: -250, y: h * 0.20, vx: 17.2, color: '#10b981', label: 'ARES-02 (Bravo)', scanSize: 85, trail: [] },
+          { id: 'ARES-03', x: -290, y: h * 0.38, vx: 15.8, color: '#38bdf8', label: 'ARES-03 (Charlie)', scanSize: 95, trail: [] },
+          { id: 'ARES-04', x: -370, y: h * 0.26, vx: 16.2, color: '#34d399', label: 'ARES-04 (Delta)', scanSize: 75, trail: [] }
+        ];
+        requestAnimationFrame(renderFlyover);
+      };
+    }
+
+    // 3. Foco Táctico que Sigue al Cursor (Magic UI Spotlight)
     function initInteractiveMouseSpotlight() {
       const spotlight = document.getElementById('interactive-mouse-spotlight');
-      const cyanOrb = document.getElementById('ambient-cyan-orb');
       if (!spotlight) return;
 
       let mouseX = window.innerWidth / 2;
@@ -1377,19 +1620,12 @@
         curY += (mouseY - curY) * 0.08;
         spotlight.style.left = `${curX}px`;
         spotlight.style.top = `${curY}px`;
-
-        if (cyanOrb) {
-          const shiftX = (curX - window.innerWidth / 2) * 0.06;
-          const shiftY = (curY - window.innerHeight / 2) * 0.06;
-          cyanOrb.style.transform = `translate(calc(-50% + ${shiftX}px), ${shiftY}px)`;
-        }
-
         requestAnimationFrame(updateMouse);
       }
       requestAnimationFrame(updateMouse);
     }
 
-    // 2. Microinteracción Aceternity UI 3D Tilt y Spotlight en Tarjetas
+    // 4. Microinteracción Aceternity UI 3D Tilt y Spotlight en Tarjetas
     function initAceternityTiltCards() {
       const cards = document.querySelectorAll('.tilt-card');
       
@@ -1416,7 +1652,7 @@
       });
     }
 
-    // 3. Animación Magic UI Number Ticker para Métricas
+    // 5. Animación Magic UI Number Ticker para Métricas
     function initMagicUiNumberTicker() {
       const counters = [
         { el: document.getElementById('metric-latency-val'), target: 18.2, decimals: 1, suffix: 'ms', prefix: '' },
@@ -1486,7 +1722,7 @@
       }
     }
 
-    // 4. Contador de la Hora Dorada (<60 min) y Reloj Zulu
+    // 6. Contador de la Hora Dorada (<60 min) y Reloj Zulu
     function initGoldenHourCountdown() {
       let seconds = 59 * 60 + 59;
       const heroEl = document.getElementById('hero-countdown');
@@ -1506,7 +1742,7 @@
       }, 1000);
     }
 
-    // 5. Controladores de Video (Hero y Modal)
+    // 7. Controladores de Video (Hero y Modal)
     function toggleVideoPlayback() {
       const vid = document.getElementById('hero-main-video');
       const icon = document.getElementById('video-play-icon');
@@ -1574,7 +1810,7 @@
       }
     });
 
-    // 6. Exportadores Post-Misión AAR y Waypoints
+    // 8. Exportadores Post-Misión AAR y Waypoints
     function downloadAARDossier() {
       const aarPayload = {
         mision_id: "BIOSCOUT-ARES-SAR-HORA-DORADA",
@@ -1625,7 +1861,7 @@
       URL.revokeObjectURL(a.href);
     }
 
-    // 7. Motor del Radar Táctico en Canvas 2D
+    // 9. Motor del Radar Táctico en Canvas 2D
     let radarRangeMeters = 100;
     let radarSweepAngle = 0;
     let cpaEvasionCount = 0;
@@ -1722,7 +1958,7 @@
         ctx.save();
         ctx.beginPath();
         ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-        ctx.fillStyle = '#04070b';
+        ctx.fillStyle = '#030508';
         ctx.fill();
         ctx.lineWidth = 2;
         ctx.strokeStyle = 'rgba(6, 182, 212, 0.4)';
