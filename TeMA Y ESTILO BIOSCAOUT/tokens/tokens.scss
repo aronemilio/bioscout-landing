@@ -1,0 +1,38 @@
+// BIOSCAOUT DESIGN TOKENS (SCSS)
+// Bio-Autonomous Swarm Command & Control
+
+// Paleta Táctica
+$color-tactical-dark: #060911;
+$color-tactical-panel: #0b1220;
+$color-tactical-elevated: #111c30;
+$color-tactical-border: rgba(249, 115, 22, 0.18);
+$color-tactical-accent: #f97316;
+$color-tactical-cyan: #38bdf8;
+$color-tactical-alert: #f43f5e;
+$color-tactical-warning: #f59e0b;
+$color-tactical-success: #10b981;
+$color-tactical-rescue: #ff6b1a;
+
+// Escala Rescue (Naranja Médico)
+$rescue-50: #fff4ed;
+$rescue-100: #ffe6d5;
+$rescue-200: #ffc9aa;
+$rescue-300: #ffa371;
+$rescue-400: #ff7a3c;
+$rescue-500: #f97316;
+$rescue-600: #ea580c;
+$rescue-700: #c2410c;
+$rescue-800: #9a3412;
+$rescue-900: #7c2d12;
+$rescue-950: #431407;
+
+// Tipografías
+$font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+$font-mono: 'JetBrains Mono', monospace;
+
+// Sombras Glow
+$glow-cyan: 0 0 20px rgba(6, 182, 212, 0.25);
+$glow-emerald: 0 0 20px rgba(16, 185, 129, 0.25);
+$glow-orange: 0 0 20px rgba(249, 115, 22, 0.35);
+$glow-alert: 0 0 20px rgba(244, 63, 94, 0.35);
+$shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);

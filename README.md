@@ -28,15 +28,27 @@ bioscout-landing/
 │   ├── docs/                     # Presentaciones oficiales
 │   │   └── Cuando-la-tierra-tiembla final.pptx
 │   ├── images/                   # Diagramas y capturas de campo
+│   ├── logos/                    # Logos e insignias vectoriales oficiales (SVG)
+│   │   ├── logo_bioscaout_principal.svg
+│   │   ├── logo_bioscaout_badge.svg
+│   │   ├── logo_bioscaout_icon.svg
+│   │   ├── logo_cross_tactical.svg
+│   │   └── drone_tactical_symbol.svg
 │   └── video/                    # Demostración en video de pruebas de vuelo
+│       ├── Sin sub_compressed.mp4  # Versión optimizada servida en la landing
 │       └── Sin sub.mp4
 ├── docs/                         # Documentación técnica
 │   ├── README.md                 # Arquitectura del proyecto
 │   ├── SPEC.md                   # Especificación técnica inmutable
 │   └── Protocolo .md             # Reglas operativas del agente
 ├── src/                          # Código modularizado desacoplado
-│   ├── css/styles.css            # Estilos tácticos
-│   └── js/                       # Módulos JS de radar, enjambre y exportación
+│   ├── css/
+│   │   ├── theme.css             # Tokens de diseño, componentes y 4 modos visuales (activo)
+│   │   ├── animations.css        # Keyframes y utilidades tácticas (activo)
+│   │   └── styles.css            # Hoja heredada, no enlazada por la landing
+│   └── js/
+│       ├── app.js                # Orquestador único activo (radar, enjambre, HUD, exportadores, modos)
+│       └── *.js                  # Módulos heredados (radar/swarm/video/...) no usados por index.html
 ├── package.json                  # Definición de dependencias
 ├── SPEC.md                       # Especificación técnica en raíz
 ├── Protocolo .md                 # Protocolo y manual de reglas
@@ -45,9 +57,31 @@ bioscout-landing/
 
 ---
 
+## 🎨 Sistema de Diseño
+
+La landing se construye sobre el sistema de diseño oficial reciclado **"TeMA Y ESTILO BIOSCAOUT"** ([`TeMA Y ESTILO BIOSCAOUT/`](TeMA%20Y%20ESTILO%20BIOSCAOUT/)), adaptado a la estética de pitch de BioScout:
+
+- **Tokens de color**: superficies obsidiana (`#060911` base / `#0b1220` paneles C2 / `#111c30` elevadas), acento principal **NARANJA RESCATE `#f97316`** (escala `rescue` 50→950) y señales tácticas secundarias: cian `#38bdf8` (telemetría/radar), esmeralda `#10b981` (nominal/detectado), rosa `#f43f5e` (alerta) y ámbar `#f59e0b` (aviso). Tipografías Plus Jakarta Sans (UI) y JetBrains Mono (telemetría).
+- **Componentes**: paneles glass (`.c2-panel`, `.glass-card`), insignias de estado (`.badge-*`) y botones tácticos (`.btn-tactical-*`), además de textura de ruido y sombras tácticas; definidos en `src/css/theme.css`.
+- **Modos visuales**: 4 modos conmutables con persistencia — **Dark HUD** (predeterminado), **Light** diurno, **NVG** (fósforo verde) y **Amber** (FLIR térmico ámbar). Los filtros NVG/Amber se desactivan bajo `prefers-reduced-motion`.
+- **Animaciones**: catálogo de keyframes y utilidades tácticas en `src/css/animations.css` (float, breathe, redGlowPulse, pulseGlow, shimmer, slideUpFade, subtlePulse, breathRed, radarSweep, gridTravel).
+- **Logos e insignias**: 5 SVG oficiales en `assets/logos/` (`logo_bioscaout_principal`, `logo_bioscaout_badge`, `logo_bioscaout_icon`, `logo_cross_tactical`, `drone_tactical_symbol`).
+
+---
+
+## ♿ Accesibilidad y Buenas Prácticas
+
+- **Semántica y navegación**: HTML5 con landmarks (`header`/`nav`/`main`/`footer`), un único `h1`, enlace de salto al contenido (`<main id="contenido" tabindex="-1">`) y orden de foco lógico.
+- **Teclado**: foco visible con `:focus-visible` y token propio; modal de video con `role="dialog"`, `aria-modal`, fondo inerte (`inert`) y **trampa de foco**; cierre con `ESC` garantizado desde cualquier punto mediante **controles de video propios** (sin los controles nativos que capturan la tecla).
+- **Movimiento reducido**: bajo `prefers-reduced-motion` se detienen las partículas, el sobrevuelo y el radar (frame estático) y se desactivan los filtros NVG/Amber.
+- **Contraste**: combinaciones conformes con AA en los modos Dark, NVG, Amber y Light (con ajustes específicos de contraste en modo luz).
+- **Progressive enhancement**: contenido estático funcional sin JavaScript; scripts con `defer` y versión de Lucide fijada. El encabezado es responsive y mantiene el CTA del repositorio siempre visible.
+
+---
+
 ## 🚀 Despliegue y Ejecución Local
 
-BioScout es una aplicación estática pura (HTML5, Tailwind CSS vía CDN, Lucide Icons y Canvas 2D interactivo) sin dependencias de compilación externa:
+BioScout es una aplicación estática pura (HTML5, Tailwind CSS vía CDN, Lucide Icons con versión fijada y Canvas 2D interactivo) sin dependencias de compilación externa:
 
 ```bash
 # Servidor local con Python 3

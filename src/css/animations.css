@@ -1,0 +1,131 @@
+/**
+ * BIOSCOUT ARES — TACTICAL ANIMATION SYSTEM
+ * Reciclado desde "TeMA Y ESTILO BIOSCAOUT/animations/animations.css".
+ * Keyframes y utilidades tácticas usadas por la landing pública.
+ */
+
+/* ============================================================
+   1. KEYFRAMES
+   ============================================================ */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideDown {
+  0% { opacity: 0; transform: translateY(-16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(249, 115, 22, 0.2); }
+  50% { box-shadow: 0 0 26px rgba(249, 115, 22, 0.55); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes floatSmooth {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes counterSpin {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(1.18); }
+}
+
+@keyframes redGlowPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(244, 63, 94, 0.2), inset 0 0 8px rgba(244, 63, 94, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(244, 63, 94, 0.6), inset 0 0 14px rgba(244, 63, 94, 0.25); }
+}
+
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes subtlePulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  70% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@keyframes breathRed {
+  0%, 100% { background-color: rgba(220, 38, 38, 0.05); border-color: rgba(220, 38, 38, 0.2); box-shadow: 0 0 15px rgba(220, 38, 38, 0.1); }
+  50% { background-color: rgba(220, 38, 38, 0.15); border-color: rgba(220, 38, 38, 0.45); box-shadow: 0 0 28px rgba(220, 38, 38, 0.35); }
+}
+
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes gridTravel {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(0, -54px, 0); }
+}
+
+/* ============================================================
+   2. CLASES UTILITARIAS
+   ============================================================ */
+.animate-fadeIn        { animation: fadeIn 0.4s ease-out forwards; }
+.animate-slideUp       { animation: slideUp 0.5s ease-out forwards; }
+.animate-slideDown     { animation: slideDown 0.5s ease-out forwards; }
+.animate-scaleIn       { animation: scaleIn 0.4s var(--ease-fluid, cubic-bezier(0.16,1,0.3,1)) forwards; }
+.animate-pulseGlow     { animation: pulseGlow 2s infinite ease-in-out; }
+.animate-float         { animation: float 3s infinite ease-in-out; }
+.animate-floatSmooth   { animation: floatSmooth 4s infinite ease-in-out; }
+.animate-counterSpin   { animation: counterSpin 0.5s ease-out forwards; }
+.animate-breathe       { animation: breathe 3s ease-in-out infinite; }
+.animate-recPulse      { animation: redGlowPulse 2s ease-in-out infinite; }
+.animate-survivorPulse { animation: subtlePulse 2s infinite ease-out; }
+.animate-dangerBreathe { animation: breathRed 3s ease-in-out infinite; }
+.animate-radarSweep    { animation: radarSweep 4s linear infinite; transform-origin: center center; }
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+}
+
+/* Entrada escalonada de tarjetas KPI (aplica stagger vía --stagger) */
+.animate-card-enter {
+  animation: slideUpFade 0.6s var(--ease-fluid, cubic-bezier(0.16,1,0.3,1)) both;
+  animation-delay: var(--stagger, 0ms);
+}
+
+/* Respeta la preferencia de movimiento reducido */
+@media (prefers-reduced-motion: reduce) {
+  .animate-card-enter,
+  .animate-fadeIn, .animate-slideUp, .animate-slideDown, .animate-scaleIn,
+  .animate-pulseGlow, .animate-float, .animate-floatSmooth, .animate-breathe,
+  .animate-recPulse, .animate-survivorPulse, .animate-dangerBreathe,
+  .animate-radarSweep, .animate-shimmer {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

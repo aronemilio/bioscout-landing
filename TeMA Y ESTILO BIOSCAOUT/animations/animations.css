@@ -1,0 +1,179 @@
+/**
+ * BIOSCAOUT TACTICAL ANIMATION SYSTEM (KEYFRAMES & UTILITIES)
+ * Bio-Autonomous Swarm Command & Control
+ * Compatible con CSS nativo y Tailwind CSS.
+ */
+
+/* ============================================================
+   1. KEYFRAMES
+   ============================================================ */
+
+/* Transición suave de opacidad */
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Entrada deslizante ascendente desde 16px */
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Entrada deslizante descendente desde -16px */
+@keyframes slideDown {
+  0% { opacity: 0; transform: translateY(-16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Entrada por escala con curva bezier ultra suave */
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Efecto destello / shimmer continuo para skeletons y loaders */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Resplandor pulsante cian para nodos de telemetría y radar */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(56, 189, 248, 0.5); }
+}
+
+/* Flotación sutil militar para iconos, insignias y drones */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+/* Flotación rápida / acentuada de 4s */
+@keyframes floatSmooth {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Giro con entrada y reset */
+@keyframes counterSpin {
+  0% { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+/* Respiración de estado de conexión WS y enlace de telemetría */
+@keyframes breathe {
+  0%, 100% { opacity: 0.85; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(1.18); }
+}
+
+/* Pulsación de alerta de grabación Caja Negra REC */
+@keyframes redGlowPulse {
+  0%, 100% { 
+    box-shadow: 0 0 8px rgba(244, 63, 94, 0.2), inset 0 0 8px rgba(244, 63, 94, 0.1); 
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(244, 63, 94, 0.6), inset 0 0 14px rgba(244, 63, 94, 0.25); 
+  }
+}
+
+/* Entrada escalonada de tarjetas KPI con curva elástica */
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Pulso de onda expansiva para detección de supervivientes */
+@keyframes subtlePulse {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  70% { box-shadow: 0 0 0 12px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Pulsación de alarma crítica de peligro o fuego (NFZ) */
+@keyframes breathRed {
+  0%, 100% { 
+    background-color: rgba(220, 38, 38, 0.05); 
+    border-color: rgba(220, 38, 38, 0.2); 
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.1); 
+  }
+  50% { 
+    background-color: rgba(220, 38, 38, 0.15); 
+    border-color: rgba(220, 38, 38, 0.45); 
+    box-shadow: 0 0 28px rgba(220, 38, 38, 0.35); 
+  }
+}
+
+/* Barrido de radar táctico rotativo de 360 grados */
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   2. CLASES UTILITARIAS DE ANIMACIÓN
+   ============================================================ */
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.5s ease-out forwards;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.5s ease-out forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+}
+
+.animate-pulseGlow {
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+
+.animate-float {
+  animation: float 3s infinite ease-in-out;
+}
+
+.animate-floatSmooth {
+  animation: floatSmooth 4s infinite ease-in-out;
+}
+
+.animate-counterSpin {
+  animation: counterSpin 0.5s ease-out forwards;
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.animate-recPulse {
+  animation: redGlowPulse 2s ease-in-out infinite;
+}
+
+.animate-card-enter {
+  animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-survivorPulse {
+  animation: subtlePulse 2s infinite ease-out;
+}
+
+.animate-dangerBreathe {
+  animation: breathRed 3s ease-in-out infinite;
+}
+
+.animate-radarSweep {
+  animation: radarSweep 4s linear infinite;
+  transform-origin: center center;
+}

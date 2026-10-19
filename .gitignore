@@ -10,3 +10,8 @@ assets/video/*.mp4
 # Archivos temporales del sistema
 .DS_Store
 Thumbs.db
+*.tar.xz
+*.png.bak
+screenshot-*.png
+test-screenshot.png
+

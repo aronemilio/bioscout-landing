@@ -1,0 +1,666 @@
+/**
+ * BIOSCOUT ARES — TACTICAL RESCUE THEME
+ * Reciclado y refinado a partir del sistema de diseño "TeMA Y ESTILO BIOSCAOUT"
+ * (tokens/tokens.scss, styles/tactical-theme.css) para la landing pública.
+ *
+ * Identidad: Command & Control de rescate sobre obsidiana volcánica.
+ * Acento principal de marca: Naranja Rescate #f97316.
+ * Señales tácticas: cian (telemetría/radar), esmeralda (nominal), rosa (alerta), ámbar (aviso).
+ */
+
+/* ============================================================
+   1. TOKENS DE DISEÑO (Design Tokens)
+   ============================================================ */
+:root {
+  /* Tipografía */
+  --font-main: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Superficies (Dark HUD) */
+  --bg-base: #060911;
+  --bg-deep: #030408;
+  --bg-surface: #0b1220;
+  --bg-elevated: #111c30;
+  --border-subtle: rgba(249, 115, 22, 0.18);
+  --border-accent: rgba(249, 115, 22, 0.45);
+
+  /* Textos */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+
+  /* Acentos y señales tácticas */
+  --accent-orange: #f97316;
+  --accent-orange-hover: #ea580c;
+  --accent-orange-hi: #fb923c;
+  --accent-cyan: #38bdf8;
+  --accent-cyan-strong: #06b6d4;
+  --accent-emerald: #10b981;
+  --accent-rose: #f43f5e;
+  --accent-amber: #f59e0b;
+
+  /* Sombras y glows */
+  --glow-orange: 0 0 20px rgba(249, 115, 22, 0.35);
+  --glow-cyan: 0 0 20px rgba(6, 182, 212, 0.28);
+  --glow-emerald: 0 0 20px rgba(16, 185, 129, 0.28);
+  --glow-alert: 0 0 20px rgba(244, 63, 94, 0.35);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+  /* Curvas y radios */
+  --ease-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+  --radius-lg: 24px;
+  --radius-md: 16px;
+}
+
+/* ============================================================
+   2. MODOS VISUALES OPERACIONALES (Light / NVG / Amber)
+   ============================================================ */
+html.light {
+  --bg-base: #f1f5f9;
+  --bg-deep: #e2e8f0;
+  --bg-surface: #ffffff;
+  --bg-elevated: #f8fafc;
+  --border-subtle: rgba(148, 163, 184, 0.4);
+  --border-accent: #ea580c;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #475569;
+  color-scheme: light;
+}
+
+/* NVG — Fósforo verde de visión nocturna militar */
+html.nvg {
+  filter: hue-rotate(80deg) saturate(1.4) contrast(1.15) brightness(1.05);
+}
+
+/* AMBER — Fósforo ámbar de cámara térmica FLIR */
+html.amber {
+  filter: sepia(0.85) saturate(2.4) hue-rotate(345deg);
+}
+
+/* ============================================================
+   3. BASE DEL DOCUMENTO Y TEXTURA DE RUIDO
+   ============================================================ */
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  letter-spacing: -0.012em;
+  position: relative;
+  min-height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Textura de grano sutil táctica (grano de sensor) */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  mix-blend-mode: overlay;
+}
+
+::selection {
+  background: var(--accent-orange);
+  color: #0b0602;
+}
+
+/* El atributo [hidden] debe prevalecer sobre utilidades de display (p. ej. .flex) */
+[hidden] { display: none !important; }
+
+/* Foco visible accesible (WCAG 2.4.7) */
+:focus-visible,
+a:focus-visible,
+button:focus-visible,
+[href]:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent-orange-hi);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+html.light :focus-visible,
+html.light a:focus-visible,
+html.light button:focus-visible,
+html.light [href]:focus-visible,
+html.light [tabindex]:focus-visible {
+  outline-color: var(--accent-orange-hover);
+}
+
+/* Scrollbar táctica */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.28); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent-orange); }
+
+/* Utilidad de texto sólo para lectores de pantalla */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Skip link accesible (WCAG 2.4.1) */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 16px;
+  z-index: 10000;
+  padding: 10px 18px;
+  border-radius: 12px;
+  background: var(--accent-orange);
+  color: #0b0602;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  transition: top 0.2s ease;
+}
+.skip-link:focus {
+  top: 16px;
+}
+
+/* Contraste del texto atenuado en modos oscuros (WCAG 1.4.3) */
+html:not(.light) .text-slate-500 { color: #94a3b8 !important; }
+
+/* ============================================================
+   4. NÚMEROS Y TELEMETRÍA TABULAR
+   ============================================================ */
+.font-mono-val,
+.tabular {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   5. PANELES Y GLASSMORPHISM
+   ============================================================ */
+.c2-panel {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  box-shadow: var(--shadow-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s var(--ease-fluid);
+}
+
+.glass-panel {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background-color: rgba(11, 18, 32, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-lg);
+}
+
+.glass-card {
+  position: relative;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  background-color: rgba(11, 18, 32, 0.78);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
+  transition: transform 0.35s var(--ease-fluid), border-color 0.3s ease, box-shadow 0.35s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--border-accent);
+  transform: translateY(-4px);
+  box-shadow: 0 28px 60px -18px rgba(249, 115, 22, 0.32);
+}
+
+/* Muescas tácticas de esquina */
+.corner-notches::before,
+.corner-notches::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  z-index: 2;
+}
+.corner-notches::before {
+  top: -1px; left: -1px;
+  border-top: 2px solid var(--accent-orange);
+  border-left: 2px solid var(--accent-orange);
+}
+.corner-notches::after {
+  bottom: -1px; right: -1px;
+  border-bottom: 2px solid var(--accent-orange);
+  border-right: 2px solid var(--accent-orange);
+}
+.corner-notches-cyan::before { border-color: var(--accent-cyan); }
+.corner-notches-cyan::after { border-color: var(--accent-cyan); }
+
+/* ============================================================
+   5b. MODO LUZ — Sobrescritura de utilidades Tailwind usadas
+   ============================================================ */
+html.light body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+}
+html.light .glass-panel,
+html.light .glass-card,
+html.light .c2-panel {
+  background-color: rgba(255, 255, 255, 0.94);
+  color: var(--text-primary);
+  border-color: rgba(203, 213, 225, 0.9);
+}
+html.light .glass-card:hover {
+  border-color: rgba(234, 88, 12, 0.5);
+  box-shadow: 0 24px 50px -20px rgba(234, 88, 12, 0.25);
+}
+
+/* Superficies */
+html.light .bg-obsidian-950 { background-color: var(--bg-base) !important; }
+html.light .bg-obsidian-950\/85,
+html.light .bg-obsidian-950\/90,
+html.light .bg-obsidian-950\/95 { background-color: rgba(241, 245, 249, 0.92) !important; }
+html.light .bg-obsidian-900,
+html.light .bg-obsidian-900\/70,
+html.light .bg-obsidian-900\/80,
+html.light .bg-obsidian-900\/85,
+html.light .bg-obsidian-900\/90 { background-color: rgba(255, 255, 255, 0.95) !important; }
+html.light .bg-obsidian-850 { background-color: #f1f5f9 !important; }
+html.light .bg-obsidian-800 { background-color: #eef2f7 !important; }
+html.light .bg-obsidian-750 { background-color: #e2e8f0 !important; }
+html.light .bg-rescue-950\/70 { background-color: #ffedd5 !important; }
+html.light .bg-rose-950\/80,
+html.light .bg-rose-950\/90 { background-color: #ffe4e6 !important; }
+html.light .bg-rose-950\/95 { background-color: #ffe4e6 !important; }
+html.light .bg-amber-950\/80,
+html.light .bg-amber-950\/90 { background-color: #fef3c7 !important; }
+
+/* Textos */
+html.light .text-white,
+html.light .text-slate-100 { color: #0f172a !important; }
+html.light .text-slate-200 { color: #1e293b !important; }
+html.light .text-slate-300 { color: #334155 !important; }
+html.light .text-slate-400 { color: #475569 !important; }
+html.light .text-slate-500 { color: #475569 !important; }
+html.light .text-rescue-200,
+html.light .text-rescue-300 { color: #c2410c !important; }
+html.light .text-rescue-400,
+html.light .text-rescue-500 { color: #c2410c !important; }
+html.light .text-cyan-300,
+html.light .text-cyan-400 { color: #0369a1 !important; }
+html.light .text-emerald-300,
+html.light .text-emerald-400 { color: #047857 !important; }
+html.light .text-rose-200,
+html.light .text-rose-300,
+html.light .text-rose-400 { color: #be123c !important; }
+html.light .text-amber-300,
+html.light .text-amber-400 { color: #b45309 !important; }
+
+/* Bordes */
+html.light .border-slate-800,
+html.light .border-slate-900 { border-color: #e2e8f0 !important; }
+html.light .border-rescue-500\/20,
+html.light .border-rescue-500\/30,
+html.light .border-rescue-500\/40 { border-color: rgba(234, 88, 12, 0.35) !important; }
+html.light .border-cyan-500\/20,
+html.light .border-cyan-500\/30 { border-color: rgba(2, 132, 199, 0.35) !important; }
+html.light .border-emerald-500\/30 { border-color: rgba(4, 120, 87, 0.35) !important; }
+html.light .border-rose-500\/40 { border-color: rgba(225, 29, 72, 0.4) !important; }
+
+/* Gradiente de titular legible sobre claro */
+html.light .text-gradient-rescue {
+  background: linear-gradient(100deg, #9a3412 0%, #ea580c 45%, #d97706 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+/* Badges con contraste AA sobre fondo claro */
+html.light .badge-orange  { color: #c2410c; border-color: rgba(234, 88, 12, 0.45); }
+html.light .badge-emerald { color: #047857; border-color: rgba(4, 120, 87, 0.45); }
+html.light .badge-cyan    { color: #0369a1; border-color: rgba(2, 132, 199, 0.45); }
+html.light .badge-rose    { color: #be123c; border-color: rgba(225, 29, 72, 0.45); }
+
+/* Botón fantasma legible sobre claro */
+html.light .btn-tactical-ghost {
+  background: rgba(255, 255, 255, 0.85);
+  color: #c2410c;
+}
+html.light .btn-tactical-ghost:hover { background: rgba(249, 115, 22, 0.14); color: #9a3412; }
+
+/* Aurora y texto con glow atenuados */
+html.light .tactical-bg-layer::after { opacity: 0.5; }
+html.light .text-glow-orange,
+html.light .text-glow-cyan,
+html.light .text-glow-emerald { text-shadow: none; }
+
+/* ============================================================
+   6. BADGES TÁCTICOS
+   ============================================================ */
+.badge-tactical {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 11px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border-radius: 9999px;
+  backdrop-filter: blur(8px);
+  font-family: var(--font-mono);
+}
+.badge-orange  { background-color: rgba(249, 115, 22, 0.12); color: #fdba74; border: 1px solid rgba(249, 115, 22, 0.3); }
+.badge-emerald { background-color: rgba(16, 185, 129, 0.12); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+.badge-cyan    { background-color: rgba(56, 189, 248, 0.12); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3); }
+.badge-rose    { background-color: rgba(244, 63, 94, 0.12);  color: #fda4af; border: 1px solid rgba(244, 63, 94, 0.3); }
+
+/* ============================================================
+   7. BOTONES TÁCTICOS
+   ============================================================ */
+.btn-tactical-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-orange-hover) 100%);
+  color: #0b0602;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 14px;
+  padding: 12px 22px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(249, 115, 22, 0.32);
+  transition: transform 0.25s var(--ease-fluid), box-shadow 0.25s ease, filter 0.25s ease;
+}
+.btn-tactical-primary:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(249, 115, 22, 0.5);
+}
+.btn-tactical-primary:active { transform: translateY(0) scale(0.98); }
+
+.btn-tactical-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(11, 18, 32, 0.7);
+  color: var(--accent-orange-hi);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-accent);
+  border-radius: 14px;
+  padding: 12px 22px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.25s var(--ease-fluid);
+}
+.btn-tactical-ghost:hover {
+  background: rgba(249, 115, 22, 0.14);
+  transform: translateY(-2px);
+  color: #ffedd5;
+}
+
+.hover-glow { transition: all 0.3s var(--ease-fluid); }
+.hover-glow:hover {
+  box-shadow: var(--glow-orange);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px) scale(1.01);
+}
+.hover-glow:active { transform: scale(0.98); }
+
+/* ============================================================
+   8. BRILLOS DE TEXTO
+   ============================================================ */
+.text-glow-orange  { text-shadow: 0 0 18px rgba(249, 115, 22, 0.7); }
+.text-glow-cyan    { text-shadow: 0 0 16px rgba(6, 182, 212, 0.7); }
+.text-glow-emerald { text-shadow: 0 0 16px rgba(16, 185, 129, 0.7); }
+
+.text-gradient-rescue {
+  background: linear-gradient(100deg, #ffffff 0%, #fdba74 45%, var(--accent-orange) 75%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ============================================================
+   9. FONDO TÁCTICO ATMOSFÉRICO (Aurora + Malla Lidar + Partículas)
+   ============================================================ */
+.tactical-bg-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Aurora de rescate en la parte superior */
+.tactical-bg-layer::after {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: 50%;
+  width: 120%;
+  height: 80%;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(ellipse 45% 60% at 50% 40%, rgba(249, 115, 22, 0.16) 0%, transparent 70%),
+    radial-gradient(ellipse 30% 50% at 20% 30%, rgba(245, 158, 11, 0.1) 0%, transparent 70%),
+    radial-gradient(ellipse 30% 50% at 80% 30%, rgba(56, 189, 248, 0.08) 0%, transparent 70%);
+}
+
+#ambient-particles-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Malla topográfica / radar isoclínico cálido */
+.tactical-topomesh {
+  position: absolute;
+  inset: -20%;
+  width: 140%;
+  height: 140%;
+  background-image:
+    radial-gradient(circle at 50% 25%, rgba(249, 115, 22, 0.1) 0%, transparent 55%),
+    radial-gradient(circle at 85% 65%, rgba(56, 189, 248, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 12% 78%, rgba(16, 185, 129, 0.05) 0%, transparent 55%),
+    linear-gradient(to right, rgba(249, 115, 22, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(249, 115, 22, 0.045) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 100% 100%, 54px 54px, 54px 54px;
+  opacity: 0.9;
+  animation: gridTravel 26s linear infinite;
+}
+html.light .tactical-topomesh {
+  background-image:
+    radial-gradient(circle at 50% 25%, rgba(234, 88, 12, 0.08) 0%, transparent 55%),
+    linear-gradient(to right, rgba(148, 163, 184, 0.14) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.14) 1px, transparent 1px);
+  background-size: 100% 100%, 54px 54px, 54px 54px;
+}
+
+.topographic-lines {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 90% 60% at 50% 18%, transparent 40%, rgba(249, 115, 22, 0.03) 65%, transparent 72%);
+  pointer-events: none;
+}
+
+#interactive-mouse-spotlight {
+  position: fixed;
+  width: 620px;
+  height: 620px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.1) 0%, rgba(249, 115, 22, 0) 70%);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  will-change: left, top;
+}
+
+/* ============================================================
+   10. SOBREVUELO DEL ENJAMBRE
+   ============================================================ */
+#swarm-flyover-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 45;
+  overflow: hidden;
+  transition: opacity 0.8s ease-out;
+}
+#swarm-flyover-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#flyover-hud-banner {
+  position: absolute;
+  top: 104px;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 0.5s ease-out;
+}
+
+/* ============================================================
+   11. TARJETAS 3D TILT + SPOTLIGHT
+   ============================================================ */
+.perspective-container { perspective: 1200px; }
+
+.tilt-card {
+  transform-style: preserve-3d;
+  transition: transform 0.4s var(--ease-fluid), border-color 0.3s ease, box-shadow 0.4s ease;
+  position: relative;
+  will-change: transform;
+}
+.tilt-card-spotlight {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(420px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(249, 115, 22, 0.18), transparent 72%);
+}
+.tilt-card:hover .tilt-card-spotlight { opacity: 1; }
+.tilt-inner-element { transform: translateZ(26px); transition: transform 0.4s var(--ease-fluid); }
+.tilt-inner-deep { transform: translateZ(44px); transition: transform 0.4s var(--ease-fluid); }
+
+/* ============================================================
+   12. SHINE BORDER BEAM (Haz giratorio de borde)
+   ============================================================ */
+.shine-border-wrapper {
+  position: relative;
+  border-radius: 26px;
+  overflow: hidden;
+  padding: 1.5px;
+}
+.shine-border-beam {
+  position: absolute;
+  inset: -150%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg, transparent 300deg,
+    var(--accent-orange) 330deg, var(--accent-amber) 350deg, var(--accent-orange) 360deg
+  );
+  animation: rotateBorderBeam 7s linear infinite;
+  pointer-events: none;
+}
+.shine-border-content {
+  position: relative;
+  z-index: 1;
+  border-radius: calc(26px - 1.5px);
+  background: rgba(6, 9, 17, 0.94);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+html.light .shine-border-content { background: rgba(255, 255, 255, 0.96); }
+
+@keyframes rotateBorderBeam {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   13. MARCO DE VIDEO HERO
+   ============================================================ */
+.hero-video-frame {
+  background: rgba(4, 6, 11, 0.96);
+  border: 1px solid var(--border-accent);
+  border-radius: 26px;
+  box-shadow:
+    0 0 60px -12px rgba(249, 115, 22, 0.35),
+    0 24px 48px -18px rgba(0, 0, 0, 0.85);
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.hero-video-frame:hover {
+  border-color: rgba(249, 115, 22, 0.75);
+  box-shadow:
+    0 0 90px -8px rgba(249, 115, 22, 0.45),
+    0 28px 56px -14px rgba(0, 0, 0, 0.9);
+}
+
+/* ============================================================
+   14. MODAL DE VIDEO
+   ============================================================ */
+#video-modal {
+  transition: opacity 0.35s var(--ease-fluid);
+}
+/* Al abrir, visibility cambia de inmediato (permite enfocar); al cerrar, se retrasa para conservar el fundido */
+#video-modal.hidden-modal {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.35s var(--ease-fluid), visibility 0s linear 0.35s;
+}
+#video-modal:not(.hidden-modal) { opacity: 1; visibility: visible; pointer-events: auto; }
+#video-modal .modal-panel {
+  transition: transform 0.4s var(--ease-fluid), opacity 0.4s var(--ease-fluid);
+  transform: scale(0.94) translateY(12px);
+}
+#video-modal:not(.hidden-modal) .modal-panel { transform: scale(1) translateY(0); }
+
+/* ============================================================
+   15. UTILIDADES VARIAS
+   ============================================================ */
+.gear-spin-slow { animation: spinGear 24s linear infinite; transform-origin: center; }
+@keyframes spinGear { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+#nav-zulu-clock { font-variant-numeric: tabular-nums; }
+
+/* ============================================================
+   16. MOVIMIENTO REDUCIDO (WCAG 2.3)
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  html.nvg, html.amber { filter: none; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .tactical-topomesh,
+  .shine-border-beam,
+  .gear-spin-slow { animation: none !important; }
+}

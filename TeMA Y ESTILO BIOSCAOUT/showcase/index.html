@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BIOSCAOUT | Catálogo Interactivo de Tema, Estilo, Animaciones y Logos</title>
+
+  <!-- Google Fonts Oficiales del Sistema -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Estilos y Animaciones de BIOSCAOUT -->
+  <link rel="stylesheet" href="../styles/tactical-theme.css">
+  <link rel="stylesheet" href="../animations/animations.css">
+
+  <style>
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .swatch {
+      height: 70px;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin-top: 36px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid rgba(249, 115, 22, 0.2);
+      padding-bottom: 8px;
+    }
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 18px 24px;
+      margin-bottom: 30px;
+    }
+    .theme-buttons {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .theme-btn {
+      padding: 8px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      color: #f8fafc;
+      transition: all 0.2s ease;
+    }
+    .theme-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-1px);
+    }
+    .theme-btn.active {
+      background: #f97316;
+      border-color: #ea580c;
+      color: #ffffff;
+      box-shadow: 0 0 15px rgba(249, 115, 22, 0.5);
+    }
+    .logo-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 180px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container animate-fadeIn">
+
+    <!-- BARRA SUPERIOR DE CONTROL DE TEMA -->
+    <header class="c2-panel header-bar">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <img src="../logos/logo_bioscaout_badge.svg" alt="BIOSCAOUT Badge" style="width: 48px; height: 48px;" class="animate-floatSmooth">
+        <div>
+          <h1 style="font-size: 18px; font-weight: 900; margin: 0; background: linear-gradient(90deg, #fff, #fed7aa, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            BIOSCAOUT TACTICAL DESIGN SYSTEM
+          </h1>
+          <p style="font-size: 12px; color: var(--text-muted); margin: 2px 0 0 0;">
+            Tema, Animaciones, Keyframes y Logos Vectoriales Oficiales
+          </p>
+        </div>
+      </div>
+
+      <!-- Selector de Temas Militares -->
+      <div class="theme-buttons">
+        <button class="theme-btn active" onclick="setTheme('dark', this)">🌙 Dark HUD</button>
+        <button class="theme-btn" onclick="setTheme('light', this)">☀️ Modo Luz</button>
+        <button class="theme-btn" onclick="setTheme('nvg', this)">🟢 NVG Fósforo</button>
+        <button class="theme-btn" onclick="setTheme('amber', this)">🟠 Amber FLIR</button>
+      </div>
+    </header>
+
+    <!-- SECCIÓN 1: LOGOS E INSIGNIAS VECTORIALES -->
+    <div class="section-title">
+      <span style="color: #f97316;">★</span>
+      <span>1. Logos e Insignias del Proyecto (SVG Oficiales)</span>
+    </div>
+
+    <div class="grid-2">
+      <!-- Logo Principal Completo -->
+      <div class="c2-panel p-4" style="padding: 20px;">
+        <h3 style="font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-top: 0;">Logotipo Horizontal Completo</h3>
+        <div class="logo-box">
+          <img src="../logos/logo_bioscaout_principal.svg" alt="BIOSCAOUT Logo Principal" style="max-width: 100%; height: auto;">
+        </div>
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">Archivo: <code>logos/logo_bioscaout_principal.svg</code></p>
+      </div>
+
+      <!-- Badge Táctico C2 Flotante -->
+      <div class="c2-panel p-4" style="padding: 20px;">
+        <h3 style="font-size: 13px; font-weight: 700; color: var(--text-secondary); margin-top: 0;">Insignia Badge Flotante (Con Animación Float)</h3>
+        <div class="logo-box">
+          <img src="../logos/logo_bioscaout_badge.svg" alt="BIOSCAOUT Badge" style="width: 110px; height: 110px;" class="animate-float">
+        </div>
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 10px;">Archivo: <code>logos/logo_bioscaout_badge.svg</code></p>
+      </div>
+    </div>
+
+    <div class="grid-4" style="margin-top: 16px;">
+      <!-- Favicon / Polígono -->
+      <div class="c2-panel" style="padding: 16px; text-align: center;">
+        <h4 style="font-size: 12px; margin: 0 0 10px 0; color: var(--text-secondary);">Favicon Polígono</h4>
+        <div class="logo-box" style="min-height: 100px;">
+          <img src="../logos/logo_bioscaout_icon.svg" alt="Icono" style="width: 42px; height: 42px;">
+        </div>
+        <p style="font-size: 10px; color: var(--text-muted); margin: 8px 0 0 0;"><code>logo_bioscaout_icon.svg</code></p>
+      </div>
+
+      <!-- Cruz Táctica Médica -->
+      <div class="c2-panel" style="padding: 16px; text-align: center;">
+        <h4 style="font-size: 12px; margin: 0 0 10px 0; color: var(--text-secondary);">Cruz Médica SAR</h4>
+        <div class="logo-box" style="min-height: 100px;">
+          <img src="../logos/logo_cross_tactical.svg" alt="Cruz Médica" style="width: 48px; height: 48px;">
+        </div>
+        <p style="font-size: 10px; color: var(--text-muted); margin: 8px 0 0 0;"><code>logo_cross_tactical.svg</code></p>
+      </div>
+
+      <!-- Símbolo Cuadricóptero UAV -->
+      <div class="c2-panel" style="padding: 16px; text-align: center;">
+        <h4 style="font-size: 12px; margin: 0 0 10px 0; color: var(--text-secondary);">Silueta UAV Radar</h4>
+        <div class="logo-box" style="min-height: 100px;">
+          <img src="../logos/drone_tactical_symbol.svg" alt="UAV" style="width: 48px; height: 48px;">
+        </div>
+        <p style="font-size: 10px; color: var(--text-muted); margin: 8px 0 0 0;"><code>drone_tactical_symbol.svg</code></p>
+      </div>
+
+      <!-- Referencia Arquitectura UI -->
+      <div class="c2-panel" style="padding: 16px; text-align: center;">
+        <h4 style="font-size: 12px; margin: 0 0 10px 0; color: var(--text-secondary);">Referencia Original</h4>
+        <div class="logo-box" style="min-height: 100px;">
+          <img src="../logos/referencia_arquitectura_ui.jpeg" alt="Referencia" style="max-width: 100%; max-height: 60px; object-fit: contain;">
+        </div>
+        <p style="font-size: 10px; color: var(--text-muted); margin: 8px 0 0 0;"><code>referencia_arquitectura_ui.jpeg</code></p>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: ANIMACIONES Y KEYFRAMES EN VIVO -->
+    <div class="section-title">
+      <span style="color: #38bdf8;">⚡</span>
+      <span>2. Animaciones y Keyframes Tácticos en Tiempo Real</span>
+    </div>
+
+    <div class="grid-3">
+      <!-- Animación 1: Float -->
+      <div class="glass-card hover-glow" style="padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span class="badge-tactical badge-orange">@keyframes float</span>
+          <span style="font-size: 10px; color: var(--text-muted);">3s ease-in-out</span>
+        </div>
+        <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
+          <div class="animate-float" style="padding: 12px 20px; border-radius: 14px; background: rgba(249, 115, 22, 0.2); border: 1px solid #f97316; font-weight: 700; color: #fed7aa;">
+            🛸 Flotación Continua
+          </div>
+        </div>
+        <p style="font-size: 11px; color: var(--text-secondary); margin: 10px 0 0 0;">
+          Desplazamiento vertical suave de -4px para drones, insignias y elementos dinámicos.
+        </p>
+      </div>
+
+      <!-- Animación 2: Breathe (Pulsación WS) -->
+      <div class="glass-card hover-glow" style="padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span class="badge-tactical badge-emerald">@keyframes breathe</span>
+          <span style="font-size: 10px; color: var(--text-muted);">3s loop</span>
+        </div>
+        <div style="height: 80px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+          <span class="animate-breathe" style="width: 16px; height: 16px; border-radius: 50%; background: #10b981; box-shadow: 0 0 12px #10b981; display: inline-block;"></span>
+          <span style="font-weight: 700; color: #a7f3d0; font-size: 13px;">ENLACE WS NOMINAL</span>
+        </div>
+        <p style="font-size: 11px; color: var(--text-secondary); margin: 10px 0 0 0;">
+          Respiración de escala (1.18x) y opacidad para indicar telemetría viva a 20 Hz.
+        </p>
+      </div>
+
+      <!-- Animación 3: redGlowPulse (REC Caja Negra) -->
+      <div class="glass-card hover-glow" style="padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span class="badge-tactical badge-rose">@keyframes redGlowPulse</span>
+          <span style="font-size: 10px; color: var(--text-muted);">2s alert</span>
+        </div>
+        <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
+          <button class="animate-recPulse" style="padding: 10px 20px; border-radius: 14px; background: rgba(244, 63, 94, 0.2); border: 1px solid #f43f5e; color: #fecdd3; font-weight: 800; cursor: pointer;">
+            ● REC CAJA NEGRA 02:45
+          </button>
+        </div>
+        <p style="font-size: 11px; color: var(--text-secondary); margin: 10px 0 0 0;">
+          Pulsación de resplandor carmesí con sombra interna para estados de grabación forense.
+        </p>
+      </div>
+
+      <!-- Animación 4: pulseGlow (Radar Cian) -->
+      <div class="glass-card hover-glow" style="padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span class="badge-tactical badge-cyan">@keyframes pulseGlow</span>
+          <span style="font-size: 10px; color: var(--text-muted);">2s ease</span>
+        </div>
+        <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
+          <div class="animate-pulseGlow" style="padding: 10px 20px; border-radius: 14px; background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #bae6fd; font-weight: 700;">
+            📡 RADAR ACTIVO
+          </div>
+        </div>
+        <p style="font-size: 11px; color: var(--text-secondary); margin: 10px 0 0 0;">
+          Resplandor de neón cian envolvente de hasta 25px de difusión.
+        </p>
+      </div>
+
+      <!-- Animación 5: shimmer (Carga y Loader) -->
+      <div class="glass-card hover-glow" style="padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span class="badge-tactical badge-orange">@keyframes shimmer</span>
+          <span style="font-size: 10px; color: var(--text-muted);">2s linear</span>
+        </div>
+        <div style="height: 80px; display: flex; flex-direction: column; justify-content: center; gap: 8px;">
+          <div class="animate-shimmer" style="height: 16px; border-radius: 8px; width: 100%;"></div>
+          <div class="animate-shimmer" style="height: 16px; border-radius: 8px; width: 70%;"></div>
+        </div>
+        <p style="font-size: 11px; color: var(--text-secondary); margin: 10px 0 0 0;">
+          Gradiente lineal traslúcido desplazable para estados esqueléticos de carga.
+        </p>
+      </div>
+
+      <!-- Animación 6: subtlePulse (Superviviente Detectado) -->
+      <div class="glass-card hover-glow" style="padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span class="badge-tactical badge-emerald">@keyframes subtlePulse</span>
+          <span style="font-size: 10px; color: var(--text-muted);">2s expand</span>
+        </div>
+        <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
+          <div class="animate-survivorPulse" style="width: 44px; height: 44px; border-radius: 50%; background: #10b981; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+            👤
+          </div>
+        </div>
+        <p style="font-size: 11px; color: var(--text-secondary); margin: 10px 0 0 0;">
+          Onda de choque esmeralda expansiva para nuevos objetivos y sobrevivientes.
+        </p>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 3: PALETA DE COLORES Y DESIGN TOKENS -->
+    <div class="section-title">
+      <span style="color: #10b981;">🎨</span>
+      <span>3. Paleta de Colores Tácticos & Escala Rescue</span>
+    </div>
+
+    <div class="grid-4">
+      <div class="swatch" style="background: #060911; color: #fff;">Dark HUD #060911</div>
+      <div class="swatch" style="background: #0b1220; color: #fff;">Panel C2 #0b1220</div>
+      <div class="swatch" style="background: #111c30; color: #fff;">Elevated #111c30</div>
+      <div class="swatch" style="background: #f97316; color: #fff;">Rescue 500 #f97316</div>
+      <div class="swatch" style="background: #ea580c; color: #fff;">Rescue 600 #ea580c</div>
+      <div class="swatch" style="background: #38bdf8; color: #000;">Cyan #38bdf8</div>
+      <div class="swatch" style="background: #10b981; color: #000;">Emerald #10b981</div>
+      <div class="swatch" style="background: #f43f5e; color: #fff;">Alert #f43f5e</div>
+    </div>
+
+    <!-- BOTÓN DE ACCIÓN Y CIERRE -->
+    <div style="margin-top: 40px; text-align: center; padding-bottom: 30px;">
+      <button class="btn-tactical-primary" onclick="alert('Estilo, animaciones y logos de BIOSCAOUT listos para su uso!')">
+        ✚ INTEGRAR EN NUEVO PROYECTO
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    function setTheme(themeName, btn) {
+      const root = document.documentElement;
+      root.classList.remove('dark', 'light', 'nvg', 'amber');
+
+      if (themeName === 'light') {
+        root.classList.add('light');
+      } else if (themeName === 'nvg') {
+        root.classList.add('dark', 'nvg');
+      } else if (themeName === 'amber') {
+        root.classList.add('dark', 'amber');
+      } else {
+        root.classList.add('dark');
+      }
+
+      document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+    }
+  </script>
+</body>
+</html>
